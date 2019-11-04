@@ -14,7 +14,7 @@ pipeline {
         stage('test') {
             steps {
                 bat 'mvn test'
-//                junit allowEmptyResults: true, keepLongStdio: true, testResults: 'cli/target/surefire-reports/TEST-stockexchange.cli.MyCLITest.xml'
+              junit allowEmptyResults: true, keepLongStdio: true, testResults: 'api/target/surefire-reports/TEST-testResults.xml'
             }
         }
     }
