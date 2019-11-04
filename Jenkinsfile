@@ -14,7 +14,7 @@ pipeline {
         stage('test') {
             steps {
                 bat 'mvn test'
-              junit allowEmptyResults: true, keepLongStdio: true, testResults: 'api/target/surefire-reports/	TEST-com.simon.eurder.api.CustomerControllerIntegrationTest.xml	'
+              junit allowEmptyResults: true, keepLongStdio: true, testResults: 'api/target/surefire-reports/	TEST-com.simon.eurder.api.customer.CustomerControllerIntegrationTest.xml	'
             }
         }
     }

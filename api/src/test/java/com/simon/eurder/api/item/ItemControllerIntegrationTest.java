@@ -1,8 +1,10 @@
-package com.simon.eurder.api;
+package com.simon.eurder.api.item;
 
+import com.simon.eurder.api.Application;
+import com.simon.eurder.api.RestAssuredTest;
 import com.simon.eurder.api.customer.CreateCustomerDto;
+import com.simon.eurder.domain.item.Item;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,49 +14,41 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static io.restassured.http.ContentType.JSON;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = Application.class)
-class CustomerControllerIntegrationTest extends RestAssuredTest {
+class ItemControllerIntegrationTest extends RestAssuredTest {
+
 
     @Value("${server.port}")
     private int port;
 
-    private CreateCustomerDto createCustomerDto;
-
+    private CreateItemDto createItemDto;
 
     @BeforeEach
     void setUp() {
-        createCustomerDto = new CreateCustomerDto()
-                .withCity("Heverlee")
-                .withFirstName("Simon")
-                .withLastName("Desmet")
-                .withEmail("simoncdesmet@gmail.com")
-                .withPhoneNumber("0487/57.70.40")
-                .withPostalCode("3001")
-                .withStreetName("Leeuwerikenstraat")
-                .withStreetNumber("101/3");
-    }
-
-    @AfterEach
-    void tearDown() {
-
+        createItemDto = new CreateItemDto()
+                .withName("Golfball")
+                .withDescription("Just a golf ball")
+                .withPriceInEuro(1)
+                .withAmountInStock(50);
     }
 
     @Test
-    void whenCreatingCustomer_customerIsInRepository() {
+    void whenCreatingItem_itemIsCreated() {
 
         RestAssured
                 .given()
-                .body(createCustomerDto)
+                .body(createItemDto)
                 .accept(JSON)
                 .contentType(JSON)
                 .when()
                 .port(8922)
-                .post("api/v1/customers")
+                .post("api/v1/items")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value());
-
     }
 }
