@@ -3,8 +3,8 @@ package com.simon.eurder.api.item;
 public class CreateItemDto {
 
     private String name, description;
-    private double priceInEuro;
-    private int amountInStock;
+    private String priceInEuro;
+    private String amountInStock;
 
 
     public CreateItemDto withName(String name) {
@@ -17,12 +17,12 @@ public class CreateItemDto {
         return this;
     }
 
-    public CreateItemDto withPriceInEuro(double priceInEuro) {
+    public CreateItemDto withPriceInEuro(String priceInEuro) {
         this.priceInEuro = priceInEuro;
         return this;
     }
 
-    public CreateItemDto withAmountInStock(int amountInStock) {
+    public CreateItemDto withAmountInStock(String amountInStock) {
         this.amountInStock = amountInStock;
         return this;
     }
@@ -35,11 +35,11 @@ public class CreateItemDto {
         return description;
     }
 
-    public double getPriceInEuro() {
+    public String getPriceInEuro() {
         return priceInEuro;
     }
 
-    public int getAmountInStock() {
+    public String getAmountInStock() {
         return amountInStock;
     }
 }

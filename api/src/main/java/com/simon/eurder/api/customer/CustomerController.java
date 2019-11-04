@@ -1,4 +1,5 @@
 package com.simon.eurder.api.customer;
+
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.domain.customer.Customer;
 import org.slf4j.Logger;
@@ -7,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 
 @RequestMapping(path = "api/v1/customers")
 @RestController
@@ -14,10 +20,12 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final CustomerDtoMapper customerDtoMapper;
+    private final CustomerInputValidator customerInputValidator;
     private final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     @Autowired
-    public CustomerController(CustomerService customerService, CustomerDtoMapper customerDtoMapper) {
+    public CustomerController(CustomerService customerService, CustomerDtoMapper customerDtoMapper, CustomerInputValidator customerInputValidator) {
+        this.customerInputValidator = customerInputValidator;
         logger.info("Constructing!");
         this.customerService = customerService;
         this.customerDtoMapper = customerDtoMapper;
@@ -26,6 +34,7 @@ public class CustomerController {
     @PostMapping(consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public CustomerDto registerAsCustomer(@RequestBody CreateCustomerDto createCustomerDto) {
+        customerInputValidator.validateInput(createCustomerDto);
         logger.info("Creating customer...");
         Customer createdCustomer = customerDtoMapper.CreateCustomerDtoToCustomer(createCustomerDto);
         logger.info("Adding customer...");
@@ -34,9 +43,10 @@ public class CustomerController {
         return customerDtoMapper.CustomerToDto(createdCustomer);
     }
 
-    @GetMapping(produces = "application/json")
-    @ResponseStatus(HttpStatus.OK)
-    public String thisWorks() {
-        return "this works";
+
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public void handleInvalidInput(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
+        response.sendError(BAD_REQUEST.value(), exception.getMessage());
     }
 }

@@ -11,8 +11,8 @@ public class ItemToDtoMapper {
         return new Item(
                 createItemDto.getName(),
                 createItemDto.getDescription(),
-                createItemDto.getPriceInEuro(),
-                createItemDto.getAmountInStock());
+                Double.parseDouble(createItemDto.getPriceInEuro()),
+                Integer.parseInt(createItemDto.getAmountInStock()));
     }
 
     public ItemDto itemToDto(Item item) {

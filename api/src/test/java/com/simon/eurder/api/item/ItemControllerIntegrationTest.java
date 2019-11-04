@@ -32,8 +32,8 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
         createItemDto = new CreateItemDto()
                 .withName("Golfball")
                 .withDescription("Just a golf ball")
-                .withPriceInEuro(1)
-                .withAmountInStock(50);
+                .withPriceInEuro("1")
+                .withAmountInStock("50");
     }
 
     @Test
@@ -50,5 +50,46 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @Test
+    void whenCreatingItemWithoutPrice_returnsBadRequest() {
+
+        CreateItemDto createItemDtoWithoutPrice = new CreateItemDto()
+                .withName("Golfball without price")
+                .withDescription("")
+                .withAmountInStock("50");
+        RestAssured
+                .given()
+                .body(createItemDtoWithoutPrice)
+                .accept(JSON)
+                .contentType(JSON)
+                .when()
+                .port(8922)
+                .post("api/v1/items")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void whenCreatingItemWithStringsInPrice_returnsBadRequest() {
+
+        CreateItemDto createItemDtoWithoutPrice = new CreateItemDto()
+                .withName("Golfball without price")
+                .withDescription("")
+                .withPriceInEuro("50 euro")
+                .withAmountInStock("50");
+        RestAssured
+                .given()
+                .body(createItemDtoWithoutPrice)
+                .accept(JSON)
+                .contentType(JSON)
+                .when()
+                .port(8922)
+                .post("api/v1/items")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

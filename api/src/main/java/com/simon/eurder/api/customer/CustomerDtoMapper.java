@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomerDtoMapper {
 
-    private final Logger logger = LoggerFactory.getLogger(CustomerController.class);
-
 
     public Customer CreateCustomerDtoToCustomer(CreateCustomerDto createCustomerDto) {
         return new Customer(
@@ -36,7 +34,6 @@ public class CustomerDtoMapper {
                 .withStreetNumber(customer.getCustomerAddress().getStreetNumber())
                 .withPostalCode(customer.getCustomerAddress().getPostalCode())
                 .withCity(customer.getCustomerAddress().getCity());
-        logger.info("finished creating CustomerDto");
         return customerDto;
     }
 
