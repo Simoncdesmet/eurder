@@ -1,9 +1,9 @@
 package com.simon.eurder.service;
 
-import com.simon.eurder.domain.Customer;
-import com.simon.eurder.domain.CustomerAddress;
-import com.simon.eurder.domain.CustomerRepository;
-import com.simon.eurder.service.CustomerService;
+import com.simon.eurder.domain.customer.Customer;
+import com.simon.eurder.domain.customer.CustomerAddress;
+import com.simon.eurder.domain.customer.CustomerRepository;
+import com.simon.eurder.service.customer.CustomerService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

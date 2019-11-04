@@ -1,4 +1,4 @@
-package com.simon.eurder.domain;
+package com.simon.eurder.domain.customer;
 
 import org.springframework.stereotype.Component;
 

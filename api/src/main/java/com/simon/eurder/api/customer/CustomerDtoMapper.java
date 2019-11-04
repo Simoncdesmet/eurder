@@ -1,7 +1,7 @@
-package com.simon.eurder.api;
+package com.simon.eurder.api.customer;
 
-import com.simon.eurder.domain.Customer;
-import com.simon.eurder.domain.CustomerAddress;
+import com.simon.eurder.domain.customer.Customer;
+import com.simon.eurder.domain.customer.CustomerAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -40,11 +40,4 @@ public class CustomerDtoMapper {
         return customerDto;
     }
 
-    private CustomerAddressDto customerAddressToDto(CustomerAddress customerAddress) {
-        return new CustomerAddressDto()
-                .withCity(customerAddress.getCity())
-                .withPostalCode(customerAddress.getPostalCode())
-                .withStreetName(customerAddress.getStreetName())
-                .withStreetNumber(customerAddress.getStreetNumber());
-    }
 }

@@ -1,51 +1,65 @@
-package com.simon.eurder.api;
+package com.simon.eurder.api.customer;
 
-public class CreateCustomerDto {
+public class CustomerDto {
 
-    private String firstName, lastName, email, phoneNumber;
-    private String streetName, streetNumber, postalCode, city;
+    private String customerID;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
+    private String streetName;
+    private String streetNumber;
+    private String postalCode;
+    private String city;
 
-    public CreateCustomerDto withFirstName(String firstName) {
+    public CustomerDto withCustomerID(String customerID) {
+        this.customerID = customerID;
+        return this;
+    }
+
+    public CustomerDto withFirstName(String firstName) {
         this.firstName = firstName;
         return this;
     }
 
-    public CreateCustomerDto withLastName(String lastName) {
+    public CustomerDto withLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
 
-    public CreateCustomerDto withEmail(String email) {
+    public CustomerDto withEmail(String email) {
         this.email = email;
         return this;
     }
 
-
-    public CreateCustomerDto withPhoneNumber(String phoneNumber) {
+    public CustomerDto withPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         return this;
     }
 
-    public CreateCustomerDto withStreetName(String streetName) {
+    public CustomerDto withStreetName(String streetName) {
         this.streetName = streetName;
         return this;
     }
 
-    public CreateCustomerDto withStreetNumber(String streetNumber) {
+    public CustomerDto withStreetNumber(String streetNumber) {
         this.streetNumber = streetNumber;
         return this;
     }
 
-    public CreateCustomerDto withPostalCode(String postalCode) {
+    public CustomerDto withPostalCode(String postalCode) {
         this.postalCode = postalCode;
         return this;
     }
 
-    public CreateCustomerDto withCity(String city) {
+    public CustomerDto withCity(String city) {
         this.city = city;
         return this;
     }
 
+    public String getCustomerID() {
+        return customerID;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -79,3 +93,4 @@ public class CreateCustomerDto {
         return city;
     }
 }
+

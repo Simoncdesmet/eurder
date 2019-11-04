@@ -1,6 +1,6 @@
-package com.simon.eurder.api;
-import com.simon.eurder.service.CustomerService;
-import com.simon.eurder.domain.Customer;
+package com.simon.eurder.api.customer;
+import com.simon.eurder.service.customer.CustomerService;
+import com.simon.eurder.domain.customer.Customer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
-package com.simon.eurder.domain;
+package com.simon.eurder.domain.customer;
 
-import com.simon.eurder.domain.Customer;
-import com.simon.eurder.domain.CustomerAddress;
-import com.simon.eurder.domain.CustomerRepository;
+import com.simon.eurder.domain.customer.Customer;
+import com.simon.eurder.domain.customer.CustomerAddress;
+import com.simon.eurder.domain.customer.CustomerRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

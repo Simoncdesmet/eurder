@@ -1,4 +1,4 @@
-package com.simon.eurder.api;
+package com.simon.eurder.api.customer;
 
 public class CustomerAddressDto {
 
