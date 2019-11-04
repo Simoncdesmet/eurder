@@ -5,6 +5,9 @@ import com.simon.eurder.domain.customer.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.List;
+
 @Component
 public class CustomerService {
 
@@ -17,5 +20,9 @@ public class CustomerService {
 
     public void createCustomer(Customer customer) {
         customerRepository.createCustomer(customer);
+    }
+
+    public List<Customer> getAllCustomers() {
+        return customerRepository.getCustomers();
     }
 }

@@ -4,6 +4,7 @@ import com.simon.eurder.api.Application;
 import com.simon.eurder.api.RestAssuredTest;
 import com.simon.eurder.api.customer.CreateCustomerDto;
 import io.restassured.RestAssured;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.restassured.http.ContentType.JSON;
 
@@ -58,5 +62,29 @@ class CustomerControllerIntegrationTest extends RestAssuredTest {
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value());
 
+    }
+
+    @Test
+    void givenRepositoryWith1Customer_whenGettingAllCustomers_returnsAllCustomers() {
+
+
+        List<CustomerDto> customers =
+                RestAssured
+                        .given()
+                        .contentType(JSON)
+                        .when()
+                        .port(8922)
+                        .get("api/v1/customers")
+                        .then()
+                        .assertThat()
+                        .statusCode(HttpStatus.OK.value())
+                        .extract()
+                        .body()
+                        .jsonPath().getList(".", CustomerDto.class);
+
+        Assertions.assertThat(customers.size()).isEqualTo(1);
+        Assertions.assertThat(customers.stream()
+                .map(CustomerDto::getEmail)
+                .anyMatch(customer->customer.equals("simoncdesmet@gmail.com"))).isEqualTo(true);
     }
 }

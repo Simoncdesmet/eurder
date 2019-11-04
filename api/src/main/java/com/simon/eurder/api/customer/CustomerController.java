@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 
 
 @RequestMapping(path = "api/v1/customers")
@@ -41,6 +45,13 @@ public class CustomerController {
         customerService.createCustomer(createdCustomer);
         logger.info("Returning customer...");
         return customerDtoMapper.CustomerToDto(createdCustomer);
+    }
+
+    @GetMapping(produces = "application/json")
+    @ResponseStatus(OK)
+    public List<CustomerDto> getAllCustomers() {
+        return customerService.getAllCustomers().stream()
+                .map(customerDtoMapper::CustomerToDto).collect(Collectors.toList());
     }
 
 
