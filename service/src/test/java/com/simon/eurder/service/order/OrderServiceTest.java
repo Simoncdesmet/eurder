@@ -62,7 +62,7 @@ class OrderServiceTest {
                 orderRepository,
                 new OrderValidator(itemService, customerService),
                 new OrderPriceCalculator(itemService),
-                new ShippingDateCalculator(itemService));
+                new ShippingDateCalculator(itemService), itemService, new OrderReportService());
 
         order = new Order(
                 List.of(new ItemGroup("Golf ball", 50)),
@@ -176,6 +176,31 @@ class OrderServiceTest {
         orderService.createOrder(newOrder);
         assertEquals(itemService.getItemByID("Golf ball").getReorderAmount(), 70);
         assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 0);
+    }
+
+    @Test
+    void whenPlacingOrder_itemNameIsAddedToItemGroups() {
+        Order newOrder = new Order(
+                List.of(new ItemGroup("Golf ball", 10)),
+                customer.getCustomerID());
+
+        orderService.createOrder(newOrder);
+        orderService.createOrder(newOrder);
+        assertEquals(orderRepository.getAllOrders().get(0)
+                .getItemGroups().get(0).getItemName(), "Golf ball");
+        assertEquals(orderRepository.getAllOrders().get(1)
+                .getItemGroups().get(0).getItemName(), "Golf ball");
+    }
+
+    @Test
+    void whenGettingOrderReportForCustomer_printOutIsReturned() {
+        Order newOrder = new Order(
+                List.of(new ItemGroup("Golf ball", 10)),
+                customer.getCustomerID());
+        orderService.createOrder(newOrder);
+        orderService.createOrder(newOrder);
+        orderService.createOrder(newOrder);
+        System.out.println(orderService.getOrderReportForCustomerID(customer.getCustomerID()));
     }
 
 }

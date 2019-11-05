@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class OrderRepository {
@@ -22,5 +23,11 @@ public class OrderRepository {
     public List<Order> getAllOrders() {
 
         return orders;
+    }
+
+    public List<Order> getAllOrdersByCustomerId(String customerID) {
+        return orders.stream()
+                .filter(order->order.getCustomerID().equals(customerID))
+                .collect(Collectors.toList());
     }
 }

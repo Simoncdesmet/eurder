@@ -23,6 +23,8 @@ public class OrderPriceCalculator {
     }
 
     private double calculateItemGroupPrice(ItemGroup itemGroup) {
-        return itemGroup.getAmount() * itemService.getItemByID(itemGroup.getItemID()).getPriceInEuro();
+        double itemGroupPrice = itemGroup.getAmount() * itemService.getItemByID(itemGroup.getItemID()).getPriceInEuro();
+        itemGroup.setItemGroupPrice(itemGroupPrice);
+        return itemGroupPrice;
     }
 }

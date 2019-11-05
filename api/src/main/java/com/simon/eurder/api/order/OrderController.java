@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
+
 
 @RequestMapping(path = "/api/v1/orders")
 @RestController
@@ -29,12 +31,21 @@ public class OrderController {
         this.itemGroupDtoMapper = itemGroupDtoMapper;
     }
 
+    @GetMapping(produces = "application/json", value = "/{customerID}")
+    @ResponseStatus(OK)
+    public String getAllOrdersByCustomerID(@PathVariable("customerID") String customerID) {
+        return orderService.getOrderReportForCustomerID(customerID);
+    }
+
     @PostMapping(consumes = "application/json", produces = "application/json", value = "/{customerId}")
     @ResponseStatus(HttpStatus.CREATED)
     public String createOrder(@PathVariable("customerId") String customerID, @RequestBody ItemGroupDtoWrapper itemGroupDtos) {
         Order createdOrder = createOrderBasedOnRequest(customerID, itemGroupDtos);
         return displayOrderConfirmation(createdOrder);
     }
+
+
+
 
     private Order createOrderBasedOnRequest(String customerID, ItemGroupDtoWrapper itemGroupDtos) {
         return orderService.createOrder(itemGroupDtoMapper.mapDtosToItemGroups(itemGroupDtos), customerID);

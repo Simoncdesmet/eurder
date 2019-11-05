@@ -13,7 +13,7 @@ public class Order {
     private String customerID;
 
 
-    public Order(List<ItemGroup> itemGroups,String customerID) {
+    public Order(List<ItemGroup> itemGroups, String customerID) {
         this.orderID = UUID.randomUUID().toString();
         this.itemGroups = itemGroups;
         this.customerID = customerID;
@@ -24,7 +24,7 @@ public class Order {
     }
 
     public double getTotalPrice() {
-    return totalPrice;
+        return totalPrice;
     }
 
     public List<ItemGroup> getItemGroups() {
@@ -33,5 +33,9 @@ public class Order {
 
     public String getCustomerID() {
         return customerID;
+    }
+
+    public String getOrderID() {
+        return orderID;
     }
 }
