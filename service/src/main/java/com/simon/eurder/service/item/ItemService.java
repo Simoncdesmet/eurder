@@ -17,4 +17,12 @@ public class ItemService {
     public void createItem(Item itemToCreate) {
         itemRepository.createItem(itemToCreate);
     }
+
+    public Item getItemByID(String itemID) {
+        return itemRepository.getItemByID(itemID);
+    }
+
+    public boolean isItemInStock(String itemID, int amount) {
+        return amount <= getItemByID(itemID).getAmountInStock();
+    }
 }

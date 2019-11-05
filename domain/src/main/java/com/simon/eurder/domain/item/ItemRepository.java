@@ -4,19 +4,25 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class ItemRepository {
 
 
-    private final List<Item> items = new ArrayList<>();
+    private final Map<String, Item> itemsByID = new ConcurrentHashMap<>();
 
 
     public List<Item> getAllItems() {
-        return items;
+        return new ArrayList<>(itemsByID.values());
     }
 
     public void createItem(Item itemToCreate) {
-        items.add(itemToCreate);
+        itemsByID.put(itemToCreate.getItemID(), itemToCreate);
+    }
+
+    public Item getItemByID(String itemID) {
+        return itemsByID.get(itemID);
     }
 }
