@@ -3,14 +3,18 @@ package com.simon.eurder.service.order;
 import com.simon.eurder.domain.order.ItemGroup;
 import com.simon.eurder.domain.order.Order;
 import com.simon.eurder.service.item.ItemService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+@Component
 public class ShippinDateCalculator {
 
     private final ItemService itemService;
 
+    @Autowired
     public ShippinDateCalculator(ItemService itemService) {
         this.itemService = itemService;
     }

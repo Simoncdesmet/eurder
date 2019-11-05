@@ -34,11 +34,4 @@ public class Order {
     public String getCustomerID() {
         return customerID;
     }
-
-
-
-    private void calculateShippingDate(ItemGroup itemGroup) {
-    }
-
-
 }

@@ -5,9 +5,12 @@ import com.simon.eurder.domain.order.Order;
 import com.simon.eurder.domain.order.OrderRepository;
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.service.item.ItemService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class OrderService {
 
 
@@ -16,6 +19,7 @@ public class OrderService {
     private final OrderPriceCalculator orderPriceCalculator;
     private final ShippinDateCalculator shippinDateCalculator;
 
+    @Autowired
     public OrderService(OrderRepository orderRepository, OrderValidator orderValidator, OrderPriceCalculator orderPriceCalculator, ShippinDateCalculator shippinDateCalculator) {
         this.orderRepository = orderRepository;
         this.orderValidator = orderValidator;
@@ -23,19 +27,18 @@ public class OrderService {
         this.shippinDateCalculator = shippinDateCalculator;
     }
 
-    public double createOrder(Order order) {
+    public Order createOrder(Order order) {
         return createOrder(order.getItemGroups(), order.getCustomerID());
     }
 
-    public double createOrder(List<ItemGroup> itemGroups, String customerID) {
+    public Order createOrder(List<ItemGroup> itemGroups, String customerID) {
         Order order = new Order(itemGroups, customerID);
         orderValidator.validateOrder(order);
         setTotalPrice(order);
         setShippingDates(order);
-
         orderRepository.createOrder(order);
+        return order;
 
-        return order.getTotalPrice();
     }
 
     private void setTotalPrice(Order order) {
@@ -49,16 +52,7 @@ public class OrderService {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+    public List<Order> getAllOrders() {
+        return orderRepository.getAllOrders();
+    }
 }

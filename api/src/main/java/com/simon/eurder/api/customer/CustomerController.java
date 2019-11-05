@@ -41,7 +41,7 @@ public class CustomerController {
         customerInputValidator.validateInput(createCustomerDto);
         logger.info("Creating customer...");
         Customer createdCustomer = customerDtoMapper.CreateCustomerDtoToCustomer(createCustomerDto);
-        logger.info("Adding customer...");
+        logger.info("Adding customer to repository...");
         customerService.createCustomer(createdCustomer);
         logger.info("Returning customer...");
         return customerDtoMapper.CustomerToDto(createdCustomer);

@@ -80,7 +80,7 @@ class OrderServiceTest {
     @Test
     void whenCreatingOrderOf50GolfBalls_totalPriceOfOrderIs50() {
 
-        assertEquals(50, orderService.createOrder(order));
+        assertEquals(50, orderService.createOrder(order).getTotalPrice());
     }
 
     @Test

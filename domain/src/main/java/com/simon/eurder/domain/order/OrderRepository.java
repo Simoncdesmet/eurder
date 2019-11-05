@@ -1,8 +1,11 @@
 package com.simon.eurder.domain.order;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class OrderRepository {
 
     private List<Order> orders;
