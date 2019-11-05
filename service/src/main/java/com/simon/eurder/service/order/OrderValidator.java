@@ -59,7 +59,7 @@ public class OrderValidator {
     }
 
     private void validateItemID(ItemGroup itemGroup) {
-        if (itemService.getItemByID(itemGroup.getItemID()) == null)
+        if (!itemService.itemExists(itemGroup.getItemID()))
             throw new IllegalArgumentException("No item found with this id.");
     }
 }

@@ -25,4 +25,8 @@ public class ItemRepository {
     public Item getItemByID(String itemID) {
         return itemsByID.get(itemID);
     }
+
+    public void updateItem(String itemID, Item item) {
+        itemsByID.put(itemID, item);
+    }
 }

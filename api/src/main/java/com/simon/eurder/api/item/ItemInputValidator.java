@@ -1,12 +1,15 @@
 package com.simon.eurder.api.item;
 
+import com.simon.eurder.service.item.ItemService;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ItemInputValidator {
 
-    public void validateInput(CreateItemDto createItemDto) {
+
+    public void validateDtoInput(CreateItemDto createItemDto) {
         checkForEmptyFields(createItemDto);
         validateNumber(createItemDto.getPriceInEuro());
         validateNumber(createItemDto.getAmountInStock());

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RequestMapping(path = "api/v1/items")
 @RestController
@@ -34,7 +35,7 @@ public class ItemController {
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto createItem(@RequestBody CreateItemDto createItemDto) {
         logger.info("Validating item input...");
-        itemInputValidator.validateInput(createItemDto);
+        itemInputValidator.validateDtoInput(createItemDto);
         logger.info("Creating item...");
         Item createdItem = itemToDtoMapper.createItemDtoToItem(createItemDto);
         logger.info("Adding item to repository...");
@@ -43,6 +44,17 @@ public class ItemController {
         return itemToDtoMapper.itemToDto(createdItem);
     }
 
+    @PutMapping(consumes = "application/json", produces = "application/json", value = "/{itemID}")
+    @ResponseStatus(CREATED)
+    public ItemDto updateItem(@PathVariable("itemID") String itemID, @RequestBody CreateItemDto createItemDto) {
+        logger.info("Validating item input...");
+        itemInputValidator.validateDtoInput(createItemDto);
+        Item updatedItem = itemToDtoMapper.createItemDtoToItem(createItemDto);
+        logger.info("Updating item...");
+        itemService.updateItem(itemID, updatedItem);
+        logger.info("Returning item...");
+        return itemToDtoMapper.itemToDto(updatedItem);
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public void handleInvalidInput(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
