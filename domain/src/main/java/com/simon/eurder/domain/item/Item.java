@@ -8,9 +8,10 @@ public class Item {
     private String name, description;
     private double priceInEuro;
     private int amountInStock;
+    private int reorderAmount;
 
     public Item(String name, String description, double priceInEuro, int amountInStock) {
-        this(UUID.randomUUID().toString(),name,description,priceInEuro,amountInStock);
+        this(UUID.randomUUID().toString(), name, description, priceInEuro, amountInStock);
     }
 
     public Item(String itemID, String name, String description, double priceInEuro, int amountInStock) {
@@ -19,6 +20,7 @@ public class Item {
         this.description = description;
         this.priceInEuro = priceInEuro;
         this.amountInStock = amountInStock;
+        this.reorderAmount = 0;
     }
 
     public String getItemID() {
@@ -39,5 +41,17 @@ public class Item {
 
     public int getAmountInStock() {
         return amountInStock;
+    }
+
+    public void addReorderAmount(int reorderAmountRequired) {
+        this.reorderAmount += reorderAmountRequired;
+    }
+
+    public void setAmountInStock(int amountInStock) {
+        this.amountInStock = amountInStock;
+    }
+
+    public int getReorderAmount() {
+        return this.reorderAmount;
     }
 }

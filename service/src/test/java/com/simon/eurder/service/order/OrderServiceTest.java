@@ -27,6 +27,7 @@ class OrderServiceTest {
     private OrderRepository orderRepository;
     private OrderService orderService;
     private Order order;
+    private ItemService itemService;
 
     @BeforeEach
     void setUp() {
@@ -47,7 +48,7 @@ class OrderServiceTest {
 
         customerService.createCustomer(customer);
 
-        ItemService itemService = new ItemService(new ItemRepository());
+        itemService = new ItemService(new ItemRepository());
         Item item = new Item(
                 "Golf ball",
                 "Golf ball",
@@ -61,7 +62,7 @@ class OrderServiceTest {
                 orderRepository,
                 new OrderValidator(itemService, customerService),
                 new OrderPriceCalculator(itemService),
-                new ShippinDateCalculator(itemService));
+                new ShippingDateCalculator(itemService));
 
         order = new Order(
                 List.of(new ItemGroup("Golf ball", 50)),
@@ -142,4 +143,39 @@ class OrderServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("No customer found with this id.");
     }
+
+    @Test
+    void whenPlacingOrder_amountInStockIsUpdated() {
+        Order newOrder = new Order(
+                List.of(new ItemGroup("Golf ball", 30)),
+                customer.getCustomerID());
+
+        orderService.createOrder(newOrder);
+        assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 20);
+    }
+
+    @Test
+    void whenPlacingOrderThatExceedsStock_amountInReorderIsUpdated() {
+        Order newOrder = new Order(
+                List.of(new ItemGroup("Golf ball", 60)),
+                customer.getCustomerID());
+
+        orderService.createOrder(newOrder);
+        assertEquals(itemService.getItemByID("Golf ball").getReorderAmount(), 10);
+        assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 0);
+    }
+
+
+    @Test
+    void whenPlacingMultipleOrdersThatExceedsStock_amountInReorderIsUpdated() {
+        Order newOrder = new Order(
+                List.of(new ItemGroup("Golf ball", 60)),
+                customer.getCustomerID());
+
+        orderService.createOrder(newOrder);
+        orderService.createOrder(newOrder);
+        assertEquals(itemService.getItemByID("Golf ball").getReorderAmount(), 70);
+        assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 0);
+    }
+
 }

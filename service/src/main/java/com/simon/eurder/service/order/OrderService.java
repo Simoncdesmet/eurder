@@ -3,8 +3,6 @@ package com.simon.eurder.service.order;
 import com.simon.eurder.domain.order.ItemGroup;
 import com.simon.eurder.domain.order.Order;
 import com.simon.eurder.domain.order.OrderRepository;
-import com.simon.eurder.service.customer.CustomerService;
-import com.simon.eurder.service.item.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,14 +15,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderValidator orderValidator;
     private final OrderPriceCalculator orderPriceCalculator;
-    private final ShippinDateCalculator shippinDateCalculator;
+    private final ShippingDateCalculator shippingDateCalculator;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderValidator orderValidator, OrderPriceCalculator orderPriceCalculator, ShippinDateCalculator shippinDateCalculator) {
+    public OrderService(OrderRepository orderRepository, OrderValidator orderValidator, OrderPriceCalculator orderPriceCalculator, ShippingDateCalculator shippingDateCalculator) {
         this.orderRepository = orderRepository;
         this.orderValidator = orderValidator;
         this.orderPriceCalculator = orderPriceCalculator;
-        this.shippinDateCalculator = shippinDateCalculator;
+        this.shippingDateCalculator = shippingDateCalculator;
     }
 
     public Order createOrder(Order order) {
@@ -48,7 +46,7 @@ public class OrderService {
     public void setShippingDates(Order order) {
         order.getItemGroups()
                 .forEach(itemGroup ->
-                        itemGroup.setShippingDate(shippinDateCalculator.calculateShippingDate(itemGroup)));
+                        itemGroup.setShippingDate(shippingDateCalculator.calculateShippingDate(itemGroup)));
     }
 
 

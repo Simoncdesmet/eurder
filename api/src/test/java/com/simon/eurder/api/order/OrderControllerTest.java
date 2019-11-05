@@ -95,6 +95,7 @@ class OrderControllerTest extends RestAssuredTest {
 
     }
 
+
     @Test
     void whenPostingRequestForOrderWithoutAmount_returnsBadRequest() {
 

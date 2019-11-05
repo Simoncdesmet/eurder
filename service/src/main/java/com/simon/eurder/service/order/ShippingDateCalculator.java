@@ -10,12 +10,12 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Component
-public class ShippinDateCalculator {
+public class ShippingDateCalculator {
 
     private final ItemService itemService;
 
     @Autowired
-    public ShippinDateCalculator(ItemService itemService) {
+    public ShippingDateCalculator(ItemService itemService) {
         this.itemService = itemService;
     }
 
