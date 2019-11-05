@@ -55,6 +55,11 @@ public class CustomerController {
     }
 
 
+    @GetMapping(produces = "application/json", value ="/{customerID}")
+    @ResponseStatus(OK)
+    public CustomerDto getCustomerByID(@PathVariable("customerID") String customerID) {
+        return customerDtoMapper.CustomerToDto(customerService.getCustomerByID(customerID));
+    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public void handleInvalidInput(IllegalArgumentException exception, HttpServletResponse response) throws IOException {

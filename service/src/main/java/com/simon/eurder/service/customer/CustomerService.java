@@ -25,4 +25,13 @@ public class CustomerService {
     public List<Customer> getAllCustomers() {
         return customerRepository.getCustomers();
     }
+
+    public Customer getCustomerByID(String customerID) {
+        return customerRepository.getCustomerByID(customerID);
+    }
+
+    public void clearCustomers() {
+
+        customerRepository.clearCustomers();
+    }
 }
