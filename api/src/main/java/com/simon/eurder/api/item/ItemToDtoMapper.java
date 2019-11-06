@@ -7,6 +7,12 @@ import org.springframework.stereotype.Component;
 public class ItemToDtoMapper {
 
 
+    public Item updateItemDtoToItem(String itemID, CreateItemDto createItemDto) {
+        Item updatedItem = createItemDtoToItem(createItemDto);
+        updatedItem.setItemID(itemID);
+        return updatedItem;
+    }
+
     public Item createItemDtoToItem(CreateItemDto createItemDto) {
         return new Item(
                 createItemDto.getName(),

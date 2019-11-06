@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 
 @RequestMapping(path = "/api/v1/orders")
@@ -31,7 +30,7 @@ public class OrderController {
         this.itemGroupDtoMapper = itemGroupDtoMapper;
     }
 
-    @GetMapping(produces = "application/json", value = "/{customerID}")
+    @GetMapping(produces = "application/json", value = "/customer/{customerID}")
     @ResponseStatus(OK)
     public String getAllOrdersByCustomerID(@PathVariable("customerID") String customerID) {
         return orderService.getOrderReportForCustomerID(customerID);
@@ -41,10 +40,15 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public String createOrder(@PathVariable("customerId") String customerID, @RequestBody ItemGroupDtoWrapper itemGroupDtos) {
         Order createdOrder = createOrderBasedOnRequest(customerID, itemGroupDtos);
-        return displayOrderConfirmation(createdOrder);
+        return orderService.createOrderSummary(createdOrder);
     }
 
-
+    @PostMapping(produces = "application/json", value = "reorder/{orderID}")
+    @ResponseStatus(CREATED)
+    public String reorderOrder(@PathVariable("orderID") String orderID) {
+        Order reorderedOrder = orderService.reorder(orderID);
+        return orderService.createOrderSummary(reorderedOrder);
+    }
 
 
     private Order createOrderBasedOnRequest(String customerID, ItemGroupDtoWrapper itemGroupDtos) {

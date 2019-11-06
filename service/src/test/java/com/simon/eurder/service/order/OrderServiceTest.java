@@ -195,12 +195,73 @@ class OrderServiceTest {
     @Test
     void whenGettingOrderReportForCustomer_printOutIsReturned() {
         Order newOrder = new Order(
-                List.of(new ItemGroup("Golf ball", 10)),
+                List.of(
+                        new ItemGroup("Golf ball", 10),
+                        new ItemGroup("Golf ball", 10),
+                        new ItemGroup("Golf ball", 10)),
                 customer.getCustomerID());
-        orderService.createOrder(newOrder);
-        orderService.createOrder(newOrder);
-        orderService.createOrder(newOrder);
-        System.out.println(orderService.getOrderReportForCustomerID(customer.getCustomerID()));
+        Order createdOrder = orderService.createOrder(newOrder);
+        String orderSummary = orderService.createOrderSummary(createdOrder);
+
+        System.out.println(orderSummary);
+        assertTrue(orderSummary.contains("Total price for order is: 30.0"));
+        assertTrue(orderSummary.contains("Order with id: " + createdOrder.getOrderID()));
     }
 
+
+    @Test
+    void whenReordering_orderIsRecreated() {
+        Order newOrder = new Order(
+                List.of(
+                        new ItemGroup("Golf ball", 10),
+                        new ItemGroup("Golf ball", 10),
+                        new ItemGroup("Golf ball", 10)),
+                customer.getCustomerID());
+        Order oldOrder = orderService.createOrder(newOrder);
+        Order reorderedOrder = orderService.reorder(oldOrder.getOrderID());
+        assertEquals(reorderedOrder.getCustomerID(),oldOrder.getCustomerID());
+        assertEquals(reorderedOrder.getTotalPrice(),oldOrder.getTotalPrice());
+        assertNotEquals(reorderedOrder.getOrderID(), oldOrder.getOrderID());
+    }
+
+
+    @Test
+    void givenUpdatedItem_whenReorderingOrder_orderUsesNewItemInformation() {
+        Order newOrder = new Order(
+                List.of(
+                        new ItemGroup("Golf ball", 10),
+                        new ItemGroup("Golf ball", 10),
+                        new ItemGroup("Golf ball", 10)),
+                customer.getCustomerID());
+
+        Order oldOrder = orderService.createOrder(newOrder);
+        itemService.updateItem("Golf ball",new Item("Updated golf ball","Updated golf ball",2,50));
+        Order reorderedOrder = orderService.reorder(oldOrder.getOrderID());
+
+        assertEquals(reorderedOrder.getTotalPrice(),60);
+        assertTrue(reorderedOrder.getItemGroups()
+                .stream()
+                .map(ItemGroup::getItemName)
+                .collect(Collectors.toList()).contains("Updated golf ball"));
+    }
+
+    @Test
+    void givenUpdatedItem_whenReorderingOrder_oldOrderStaysTheSame() {
+        Order newOrder = new Order(
+                List.of(
+                        new ItemGroup("Golf ball", 10),
+                        new ItemGroup("Golf ball", 10),
+                        new ItemGroup("Golf ball", 10)),
+                customer.getCustomerID());
+
+        Order oldOrder = orderService.createOrder(newOrder);
+        itemService.updateItem("Golf ball",new Item("Updated golf ball","Updated golf ball",2,50));
+        Order reorderedOrder = orderService.reorder(oldOrder.getOrderID());
+
+        assertEquals(oldOrder.getTotalPrice(),30);
+        assertFalse(oldOrder.getItemGroups()
+                .stream()
+                .map(ItemGroup::getItemName)
+                .collect(Collectors.toList()).contains("Updated golf ball"));
+    }
 }

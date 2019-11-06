@@ -21,17 +21,16 @@ public class OrderReportService {
         return reportJoiner.toString();
     }
 
-    private String getOrderPrintOut(Order order) {
-        return new StringBuilder()
-                .append("----------------------")
-                .append("\r\n")
-                .append("Order ")
-                .append(order.getOrderID())
-                .append("\r\n")
-                .append(getItemPrintOutForOrder(order))
-                .append("\r\n")
-                .append("----------------------")
-                .toString();
+    public String getOrderPrintOut(Order order) {
+        StringJoiner orderPrintout = new StringJoiner("\r\n", "-----------------", "-----------------");
+        orderPrintout.add("\r\n"+"Order with id: " + order.getOrderID());
+        orderPrintout.add(getItemPrintOutForOrder(order));
+        orderPrintout.add(displayOrderTotal(order)+"\r\n");
+        return orderPrintout.toString();
+    }
+
+    private String displayOrderTotal(Order order) {
+        return "Total price for order is: " + order.getTotalPrice();
     }
 
     private String getItemPrintOutForOrder(Order order) {

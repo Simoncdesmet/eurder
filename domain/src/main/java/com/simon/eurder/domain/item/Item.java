@@ -23,6 +23,10 @@ public class Item {
         this.reorderAmount = 0;
     }
 
+    public void setItemID(String itemID) {
+        this.itemID = itemID;
+    }
+
     public String getItemID() {
         return itemID;
     }

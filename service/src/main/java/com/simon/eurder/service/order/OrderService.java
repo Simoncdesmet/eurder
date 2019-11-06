@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class OrderService {
@@ -31,7 +34,12 @@ public class OrderService {
     }
 
     public Order createOrder(Order order) {
-        return createOrder(order.getItemGroups(), order.getCustomerID());
+
+        return createOrder(
+                order.getItemGroups().stream()
+                        .map(itemGroup -> new ItemGroup(itemGroup.getItemID(), itemGroup.getAmount()))
+                        .collect(Collectors.toList()),
+                order.getCustomerID());
     }
 
     public Order createOrder(List<ItemGroup> itemGroups, String customerID) {
@@ -69,5 +77,16 @@ public class OrderService {
 
     public String getOrderReportForCustomerID(String customerID) {
         return orderReportService.displayOrderReport(orderRepository.getAllOrdersByCustomerId(customerID));
+    }
+
+    public String createOrderSummary(Order order) {
+        return orderReportService.getOrderPrintOut(order);
+    }
+
+    public Order reorder(String orderID) {
+        Order oldOrder = orderRepository.getOrderByOrderID(orderID).orElseThrow(
+                () -> new NoSuchElementException("No order found with this ID."));
+
+        return createOrder(oldOrder);
     }
 }
