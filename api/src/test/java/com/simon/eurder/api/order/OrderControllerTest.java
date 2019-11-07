@@ -4,10 +4,7 @@ import com.simon.eurder.api.Application;
 import com.simon.eurder.api.RestAssuredTest;
 import com.simon.eurder.domain.customer.Customer;
 import com.simon.eurder.domain.customer.CustomerAddress;
-import com.simon.eurder.domain.customer.CustomerRepository;
 import com.simon.eurder.domain.item.Item;
-import com.simon.eurder.domain.item.ItemRepository;
-import com.simon.eurder.domain.order.OrderRepository;
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.service.item.ItemService;
 import com.simon.eurder.service.order.OrderService;
@@ -22,7 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @ExtendWith(SpringExtension.class)
@@ -32,8 +30,6 @@ class OrderControllerTest extends RestAssuredTest {
     @Value("${server.port}")
     private int port;
 
-
-    private ItemGroupDtoWrapper itemGroupDtoWrapper;
 
     @Autowired
     private OrderService orderService;
@@ -45,33 +41,12 @@ class OrderControllerTest extends RestAssuredTest {
 
     @BeforeEach
     void setUp() {
-        itemGroupDtoWrapper = new ItemGroupDtoWrapper()
-                .withItemGroupDto(new ItemGroupDto().withItemID("Golf ball").withAmount(50));
 
-        CustomerAddress customerAddress = new CustomerAddress(
-                "Leeuwerikenstraat",
-                "101/3",
-                "3001",
-                "Heverlee");
-
-        Customer customer = new Customer(
-                "Test001",
-                "Simon",
-                "Desmet",
-                "simoncdesmetgmail.com",
-                "0487/57.70.40",
-                customerAddress);
-
+        Customer customer = createCustomer();
         customerService.createCustomer(customer);
 
-        Item item = new Item(
-                "Golf ball",
-                "Golf ball",
-                "A golf ball",
-                1,
-                50);
+        Item item = createItem();
         itemService.createItem(item);
-
     }
 
     @Test
@@ -81,7 +56,7 @@ class OrderControllerTest extends RestAssuredTest {
                 .given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body(itemGroupDtoWrapper)
+                .body(createOrderRequest("Golf ball", 50))
                 .when()
                 .port(8922)
                 .post("api/v1/orders/Test001")
@@ -90,11 +65,10 @@ class OrderControllerTest extends RestAssuredTest {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().asString();
 
-        assertEquals(result, "Total order price: 50.0");
+        assertTrue(result.contains("Total price for order is: 50.0"));
         assertEquals("Golf ball", orderService.getAllOrders().get(0).getItemGroups().get(0).getItemID());
 
     }
-
 
     @Test
     void whenPostingRequestForOrderWithoutAmount_returnsBadRequest() {
@@ -121,14 +95,14 @@ class OrderControllerTest extends RestAssuredTest {
     @Test
     void whenPostingRequestForOrderWithoutNegativeAmount_returnsBadRequest() {
 
-        ItemGroupDtoWrapper requestWithoutAmount = new ItemGroupDtoWrapper()
+        ItemGroupDtoWrapper requestWithNegativeAmount = new ItemGroupDtoWrapper()
                 .withItemGroupDto(new ItemGroupDto().withItemID("Golf ball").withAmount(-5));
 
         String result = RestAssured
                 .given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body(requestWithoutAmount)
+                .body(requestWithNegativeAmount)
                 .when()
                 .port(8922)
                 .post("api/v1/orders/Test001")
@@ -138,5 +112,105 @@ class OrderControllerTest extends RestAssuredTest {
                 .extract().asString();
 
         assertTrue(result.contains("You need to buy at least 1 copy of each item!"));
+    }
+
+    @Test
+    void whenPlacingOrder_amountInStockIsUpdated() {
+        String result = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(createOrderRequest("Golf ball", 30))
+                .when()
+                .port(8922)
+                .post("api/v1/orders/Test001")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().asString();
+        assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 20);
+    }
+
+    @Test
+    void whenPlacingOrderThatExceedsStock_amountInReorderIsUpdated() {
+        String result = RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(createOrderRequest("Golf ball", 60))
+                .when()
+                .port(8922)
+                .post("api/v1/orders/Test001")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().asString();
+
+
+        assertEquals(itemService.getItemByID("Golf ball").getReorderAmount(), 10);
+        assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 0);
+    }
+
+    @Test
+    void whenPlacingMultipleOrdersThatExceedsStock_amountInReorderIsUpdated() {
+
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(createOrderRequest("Golf ball", 70))
+                .when()
+                .port(8922)
+                .post("api/v1/orders/Test001")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().asString();
+
+        RestAssured
+                .given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(createOrderRequest("Golf ball", 50))
+                .when()
+                .port(8922)
+                .post("api/v1/orders/Test001")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract().asString();
+
+        assertEquals(itemService.getItemByID("Golf ball").getReorderAmount(), 70);
+        assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 0);
+    }
+
+    private Item createItem() {
+        return new Item(
+                "Golf ball",
+                "Golf ball",
+                "A golf ball",
+                1,
+                50);
+    }
+
+    private ItemGroupDtoWrapper createOrderRequest(String itemID, int amount) {
+        return new ItemGroupDtoWrapper()
+                .withItemGroupDto(new ItemGroupDto().withItemID(itemID).withAmount(amount));
+    }
+
+    private Customer createCustomer() {
+        CustomerAddress customerAddress = new CustomerAddress(
+                "Leeuwerikenstraat",
+                "101/3",
+                "3001",
+                "Heverlee");
+
+        return new Customer(
+                "Test001",
+                "Simon",
+                "Desmet",
+                "simoncdesmetgmail.com",
+                "0487/57.70.40",
+                customerAddress);
     }
 }
