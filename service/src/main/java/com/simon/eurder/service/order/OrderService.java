@@ -83,6 +83,10 @@ public class OrderService {
         return orderReportService.getOrderPrintOut(order);
     }
 
+    public List<Order> getListOfOrdersShippingToday() {
+        return null;
+    }
+
     public Order reorder(String orderID) {
         Order oldOrder = orderRepository.getOrderByOrderID(orderID).orElseThrow(
                 () -> new NoSuchElementException("No order found with this ID."));

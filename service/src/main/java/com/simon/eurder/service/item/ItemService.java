@@ -15,6 +15,7 @@ public class ItemService {
 
 
     public void createItem(Item itemToCreate) {
+
         itemRepository.createItem(itemToCreate);
     }
 
