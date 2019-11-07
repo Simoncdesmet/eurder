@@ -16,7 +16,6 @@ class OrderServiceTestSetUp {
                 new OrderRepository(),
                 new OrderValidator(itemService, customerService),
                 new OrderPriceCalculator(itemService),
-                new ShippingDateCalculator(itemService),
                 itemService,
                 new OrderReportService());
     }

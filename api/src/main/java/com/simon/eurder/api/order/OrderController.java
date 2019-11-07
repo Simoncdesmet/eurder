@@ -39,7 +39,7 @@ public class OrderController {
     @PostMapping(consumes = "application/json", produces = "application/json", value = "/{customerId}")
     @ResponseStatus(HttpStatus.CREATED)
     public String createOrder(@PathVariable("customerId") String customerID, @RequestBody ItemGroupDtoWrapper itemGroupDtos) {
-        Order createdOrder = createOrderBasedOnRequest(customerID, itemGroupDtos);
+        Order createdOrder = createOrderBasedOnPostRequest(customerID, itemGroupDtos);
         return orderService.createOrderSummary(createdOrder);
     }
 
@@ -51,7 +51,7 @@ public class OrderController {
     }
 
 
-    private Order createOrderBasedOnRequest(String customerID, ItemGroupDtoWrapper itemGroupDtos) {
+    private Order createOrderBasedOnPostRequest(String customerID, ItemGroupDtoWrapper itemGroupDtos) {
         return orderService.createOrder(itemGroupDtoMapper.mapDtosToItemGroups(itemGroupDtos), customerID);
     }
 

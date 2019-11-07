@@ -7,6 +7,7 @@ import com.simon.eurder.service.item.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -19,16 +20,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderValidator orderValidator;
     private final OrderPriceCalculator orderPriceCalculator;
-    private final ShippingDateCalculator shippingDateCalculator;
     private final ItemService itemService;
     private final OrderReportService orderReportService;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderValidator orderValidator, OrderPriceCalculator orderPriceCalculator, ShippingDateCalculator shippingDateCalculator, ItemService itemService, OrderReportService orderReportService) {
+    public OrderService(OrderRepository orderRepository, OrderValidator orderValidator, OrderPriceCalculator orderPriceCalculator, ItemService itemService, OrderReportService orderReportService) {
         this.orderRepository = orderRepository;
         this.orderValidator = orderValidator;
         this.orderPriceCalculator = orderPriceCalculator;
-        this.shippingDateCalculator = shippingDateCalculator;
         this.itemService = itemService;
         this.orderReportService = orderReportService;
     }
@@ -53,6 +52,13 @@ public class OrderService {
 
     }
 
+    public Order reorder(String orderID) {
+        Order oldOrder = orderRepository.getOrderByOrderID(orderID).orElseThrow(
+                () -> new NoSuchElementException("No order found with this ID."));
+
+        return createOrder(oldOrder);
+    }
+
     private void setItemNames(Order order) {
         order.getItemGroups()
                 .forEach(itemGroup -> itemGroup
@@ -64,10 +70,10 @@ public class OrderService {
         order.setTotalPrice(orderPriceCalculator.calculateOrderPrice(order));
     }
 
-    public void setShippingDates(Order order) {
+    private void setShippingDates(Order order) {
         order.getItemGroups()
                 .forEach(itemGroup ->
-                        itemGroup.setShippingDate(shippingDateCalculator.calculateShippingDate(itemGroup)));
+                        itemGroup.setShippingDate(calculateShippingDate(itemGroup)));
     }
 
 
@@ -87,10 +93,7 @@ public class OrderService {
         return null;
     }
 
-    public Order reorder(String orderID) {
-        Order oldOrder = orderRepository.getOrderByOrderID(orderID).orElseThrow(
-                () -> new NoSuchElementException("No order found with this ID."));
-
-        return createOrder(oldOrder);
+    private LocalDate calculateShippingDate(ItemGroup itemGroup) {
+        return itemService.calculateShippingDate(itemGroup.getItemID(), itemGroup.getAmount());
     }
 }

@@ -4,6 +4,9 @@ import com.simon.eurder.domain.item.Item;
 import com.simon.eurder.domain.item.ItemRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 @Component
 public class ItemService {
 
@@ -30,15 +33,23 @@ public class ItemService {
     }
 
 
-    public boolean isItemInStock(String itemID, int amountRequired) {
+    public LocalDate calculateShippingDate(String itemID, int amountRequired) {
         int availableStock = getAmountInStock(itemID);
         if (amountRequired <= availableStock) {
             updateStock(itemID, availableStock - amountRequired);
-            return true;
+            return tomorrow();
         }
         updateStock(itemID, 0);
         addReorderAmount(itemID, amountRequired - availableStock);
-        return false;
+        return nextWeek();
+    }
+
+    private LocalDate nextWeek() {
+        return LocalDate.now().plus(7, ChronoUnit.DAYS);
+    }
+
+    private LocalDate tomorrow() {
+        return LocalDate.now().plus(1, ChronoUnit.DAYS);
     }
 
     private void addReorderAmount(String itemID, int reorderAmountRequired) {
