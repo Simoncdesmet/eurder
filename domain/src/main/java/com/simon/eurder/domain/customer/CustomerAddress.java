@@ -29,4 +29,10 @@ public class CustomerAddress {
     public String getCity() {
         return city;
     }
+
+    @Override
+    public String toString() {
+        return streetName+ " "+streetNumber+"\r\n"+
+                postalCode+", "+city;
+    }
 }

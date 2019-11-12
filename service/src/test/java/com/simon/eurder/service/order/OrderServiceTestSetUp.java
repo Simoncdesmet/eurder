@@ -9,9 +9,9 @@ import com.simon.eurder.domain.order.OrderRepository;
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.service.item.ItemService;
 
-class OrderServiceTestSetUp {
+public class OrderServiceTestSetUp {
 
-    OrderService setUpOrderService(ItemService itemService, CustomerService customerService) {
+    public OrderService setUpOrderService(ItemService itemService, CustomerService customerService) {
         return new OrderService(
                 new OrderRepository(),
                 new OrderValidator(itemService, customerService),
@@ -20,13 +20,13 @@ class OrderServiceTestSetUp {
                 new OrderReportService());
     }
 
-    CustomerService createCustomerServiceWithSimonDesmetInRepository() {
+    public CustomerService createCustomerServiceWithSimonDesmetInRepository() {
         CustomerService customerService = new CustomerService(new CustomerRepository());
         customerService.createCustomer(createSimonDesmet());
         return customerService;
     }
 
-    ItemService createItemServiceWithGolfBallInRepository() {
+    public ItemService createItemServiceWithGolfBallInRepository() {
         ItemService itemService = new ItemService(new ItemRepository());
         itemService.createItem(createGolfBall());
         return itemService;
