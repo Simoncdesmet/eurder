@@ -8,6 +8,10 @@ import com.simon.eurder.domain.item.ItemRepository;
 import com.simon.eurder.domain.order.OrderRepository;
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.service.item.ItemService;
+import com.simon.eurder.service.order.OrderPriceCalculator;
+import com.simon.eurder.service.order.OrderReportService;
+import com.simon.eurder.service.order.OrderService;
+import com.simon.eurder.service.order.OrderValidator;
 
 public class OrderServiceTestSetUp {
 
