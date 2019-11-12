@@ -10,6 +10,7 @@ import com.simon.eurder.service.item.ItemService;
 import com.simon.eurder.service.order.OrderService;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +48,13 @@ class OrderControllerTest extends RestAssuredTest {
 
         Item item = createItem();
         itemService.createItem(item);
+    }
+
+    @AfterEach
+    void tearDown() {
+        orderService.clearOrders();
+        itemService.clearItems();
+        customerService.clearCustomers();
     }
 
     @Test

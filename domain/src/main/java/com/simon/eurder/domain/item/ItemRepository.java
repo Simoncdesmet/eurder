@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ItemRepository {
 
 
-    private final Map<String, Item> itemsByID = new ConcurrentHashMap<>();
+    private Map<String, Item> itemsByID = new ConcurrentHashMap<>();
 
 
     public List<Item> getAllItems() {
@@ -28,5 +28,9 @@ public class ItemRepository {
 
     public void updateItem(String itemID, Item item) {
         itemsByID.put(itemID, item);
+    }
+
+    public void clearItems() {
+        itemsByID = new ConcurrentHashMap<>();
     }
 }

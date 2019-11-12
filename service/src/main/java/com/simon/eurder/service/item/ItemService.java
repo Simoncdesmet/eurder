@@ -67,4 +67,8 @@ public class ItemService {
     public boolean itemExists(String itemID) {
         return getItemByID(itemID) != null;
     }
+
+    public void clearItems() {
+        itemRepository.clearItems();
+    }
 }

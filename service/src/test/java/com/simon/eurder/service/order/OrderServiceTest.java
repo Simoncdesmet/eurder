@@ -33,7 +33,7 @@ class OrderServiceTest {
     @Test
     void whenCreatingOrderThroughService_orderForCustomerIDIsInRepository() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
-        orderService.createOrder(prepareSingleLineOrder("Golf ball", 50));
+        orderService.createOrder(order.getItemGroups(),order.getCustomerID());
         assertTrue(orderService.getAllOrders().stream()
                 .map(Order::getCustomerID).collect(Collectors.toList())
                 .contains(order.getCustomerID()));
@@ -43,13 +43,14 @@ class OrderServiceTest {
     @Test
     void whenCreatingOrderOf50GolfBalls_totalPriceOfOrderIs50() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
-        assertEquals(50, orderService.createOrder(order).getTotalPrice());
+        Order loggedOrder = orderService.createOrder(order.getItemGroups(),order.getCustomerID());
+        assertEquals(50, loggedOrder.getTotalPrice());
     }
 
     @Test
     void whenCreatingOrderWithItemThatDoesntExist_exceptionIsThrown() {
         Order wrongOrder = prepareSingleLineOrder("Non-existing Golf ball", 50);
-        Assertions.assertThatThrownBy(() -> orderService.createOrder(wrongOrder))
+        Assertions.assertThatThrownBy(() -> orderService.createOrder(wrongOrder.getItemGroups(),wrongOrder.getCustomerID()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("No item found with this id.");
     }
@@ -57,7 +58,7 @@ class OrderServiceTest {
     @Test
     void whenCreatingOrderWithEnoughStockAvailable_ShippingDateIsNextDay() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
-        orderService.createOrder(order);
+        orderService.createOrder(order.getItemGroups(),order.getCustomerID());
         assertEquals(orderService.getAllOrders().get(0)
                 .getItemGroups().get(0)
                 .getShippingDate(), LocalDate.now().plus(1, ChronoUnit.DAYS));
@@ -68,7 +69,7 @@ class OrderServiceTest {
     void whenCreatingOrderWithNotEnoughStockAvailable_ShippingDateIsNextWeek() {
         Order newOrder = prepareSingleLineOrder("Golf ball", 60);
 
-        orderService.createOrder(newOrder);
+        orderService.createOrder(newOrder.getItemGroups(),newOrder.getCustomerID());
         assertEquals(orderService.getAllOrders().get(0)
                 .getItemGroups().get(0)
                 .getShippingDate(), LocalDate.now().plus(7, ChronoUnit.DAYS));
@@ -80,7 +81,8 @@ class OrderServiceTest {
                 List.of(new ItemGroup("Golf ball", 50)),
                 "FakeCustomerID");
 
-        Assertions.assertThatThrownBy(() -> orderService.createOrder(orderWithNotExistingCustomer))
+        Assertions.assertThatThrownBy(() -> orderService.createOrder(
+                orderWithNotExistingCustomer.getItemGroups(),orderWithNotExistingCustomer.getCustomerID()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("No customer found with this id.");
     }
@@ -88,7 +90,7 @@ class OrderServiceTest {
     @Test
     void whenPlacingOrder_itemNameIsAddedToItemGroups() {
         Order order = prepareSingleLineOrder("Golf ball", 10);
-        orderService.createOrder(order);
+        orderService.createOrder(order.getItemGroups(),order.getCustomerID());
         assertEquals(orderService.getAllOrders().get(0)
                 .getItemGroups().get(0).getItemName(), "Golf ball");
     }
@@ -125,7 +127,7 @@ class OrderServiceTest {
     void givenUpdatedItem_whenReorderingOrder_orderUsesNewItemInformation() {
         Order newOrder = prepareOrderOfThirtyGolfBallsInThreeLines();
 
-        Order loggedOrder = orderService.createOrder(newOrder);
+        Order loggedOrder = orderService.createOrder(newOrder.getItemGroups(),newOrder.getCustomerID());
         updateGolfBallItem();
         Order reorderedOrder = orderService.reorder(loggedOrder.getOrderID());
 
@@ -149,8 +151,8 @@ class OrderServiceTest {
     }
 
     private Order createLoggedOrder() {
-        Order newOrder = prepareOrderOfThirtyGolfBallsInThreeLines();
-        return orderService.createOrder(newOrder);
+        Order order = prepareOrderOfThirtyGolfBallsInThreeLines();
+        return orderService.createOrder(order.getItemGroups(),order.getCustomerID());
     }
 
     private void updateGolfBallItem() {

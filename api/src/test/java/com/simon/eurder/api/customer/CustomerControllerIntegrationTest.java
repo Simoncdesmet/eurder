@@ -2,8 +2,6 @@ package com.simon.eurder.api.customer;
 
 import com.simon.eurder.api.Application;
 import com.simon.eurder.api.RestAssuredTest;
-import com.simon.eurder.api.customer.CreateCustomerDto;
-import com.simon.eurder.domain.customer.Customer;
 import com.simon.eurder.service.customer.CustomerService;
 import io.restassured.RestAssured;
 import org.assertj.core.api.Assertions;
@@ -18,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.restassured.http.ContentType.JSON;
 

@@ -32,15 +32,6 @@ public class OrderService {
         this.orderReportService = orderReportService;
     }
 
-    public Order createOrder(Order order) {
-
-        return createOrder(
-                order.getItemGroups().stream()
-                        .map(itemGroup -> new ItemGroup(itemGroup.getItemID(), itemGroup.getAmount()))
-                        .collect(Collectors.toList()),
-                order.getCustomerID());
-    }
-
     public Order createOrder(List<ItemGroup> itemGroups, String customerID) {
         Order order = new Order(itemGroups, customerID);
         orderValidator.validateOrder(order);
@@ -56,7 +47,24 @@ public class OrderService {
         Order oldOrder = orderRepository.getOrderByOrderID(orderID).orElseThrow(
                 () -> new NoSuchElementException("No order found with this ID."));
 
-        return createOrder(oldOrder);
+        return createOrder(oldOrder.getItemGroups(),oldOrder.getCustomerID());
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.getAllOrders();
+    }
+
+    public String getOrderReportForCustomerID(String customerID) {
+        return orderReportService.displayOrderReport(orderRepository.getAllOrdersByCustomerId(customerID));
+    }
+
+    public String createOrderSummary(Order order) {
+        return orderReportService.getOrderPrintOut(order);
+    }
+
+
+    public void clearOrders() {
+        orderRepository.clearOrders();
     }
 
     private void setItemNames(Order order) {
@@ -76,22 +84,6 @@ public class OrderService {
                         itemGroup.setShippingDate(calculateShippingDate(itemGroup)));
     }
 
-
-    public List<Order> getAllOrders() {
-        return orderRepository.getAllOrders();
-    }
-
-    public String getOrderReportForCustomerID(String customerID) {
-        return orderReportService.displayOrderReport(orderRepository.getAllOrdersByCustomerId(customerID));
-    }
-
-    public String createOrderSummary(Order order) {
-        return orderReportService.getOrderPrintOut(order);
-    }
-
-    public List<Order> getListOfOrdersShippingToday() {
-        return null;
-    }
 
     private LocalDate calculateShippingDate(ItemGroup itemGroup) {
         return itemService.calculateShippingDate(itemGroup.getItemID(), itemGroup.getAmount());

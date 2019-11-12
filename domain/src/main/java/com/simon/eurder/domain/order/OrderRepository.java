@@ -37,4 +37,8 @@ public class OrderRepository {
                 .filter(order -> order.getOrderID().equals(orderID))
                 .findFirst();
     }
+
+    public void clearOrders() {
+        orders = new ArrayList<>();
+    }
 }

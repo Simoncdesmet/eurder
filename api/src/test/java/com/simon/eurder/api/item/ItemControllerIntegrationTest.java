@@ -6,6 +6,7 @@ import com.simon.eurder.api.customer.CreateCustomerDto;
 import com.simon.eurder.domain.item.Item;
 import com.simon.eurder.service.item.ItemService;
 import io.restassured.RestAssured;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,6 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
     private int port;
 
     private CreateItemDto createItemDto;
-    private ItemDto createdItemDto;
     private Item itemToUpdate;
 
     @Autowired
@@ -43,6 +43,11 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
                 .withAmountInStock("50");
         itemToUpdate = new Item("Golf ball", "Golfball", "A normal golf ball", 1, 50);
         itemService.createItem(itemToUpdate);
+    }
+
+    @AfterEach
+    void tearDown() {
+        itemService.clearItems();
     }
 
     @Test
