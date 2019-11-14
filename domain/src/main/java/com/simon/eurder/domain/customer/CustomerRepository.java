@@ -10,32 +10,4 @@ import java.util.stream.Collectors;
 public class CustomerRepository {
 
 
-    private List<Customer> customers;
-
-    public CustomerRepository() {
-        this.customers = new ArrayList<>();
-    }
-
-    public List<Customer> getCustomers() {
-
-        return customers;
-    }
-
-    public void createCustomer(Customer customer) {
-        customers.add(customer);
-    }
-
-    public Customer getCustomerByID(String customerID) {
-        try {
-            return customers.stream()
-                    .filter(customer -> customer.getCustomerID().equals(customerID))
-                    .collect(Collectors.toList()).get(0);
-        } catch (Exception exception) {
-            throw new IllegalArgumentException("Customer not found!");
-        }
-    }
-
-    public void clearCustomers() {
-        customers = new ArrayList<>();
-    }
 }

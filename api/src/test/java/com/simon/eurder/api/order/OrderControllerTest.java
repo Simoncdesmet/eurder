@@ -72,7 +72,6 @@ class OrderControllerTest extends RestAssuredTest {
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().asString();
-
         assertTrue(result.contains("Total price for order is: 50.0"));
         assertEquals("Golf ball", orderService.getAllOrders().get(0).getItemGroups().get(0).getItemID());
 

@@ -1,11 +1,36 @@
 package com.simon.eurder.domain.customer;
 
+import javax.persistence.*;
 import java.util.UUID;
 
+@Entity
+@Table(name = "CUSTOMER")
 public class Customer {
 
-    private String customerID, firstName, lastName, email, phoneNumber;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customerSeq")
+    @SequenceGenerator(name = "customerSeq", sequenceName = "customer_seq", allocationSize = 1)
+    @Column(name = "ID")
+    private long internalID;
+
+    @Column(name = "EXTERNALID")
+    private String customerID;
+
+    @Column(name = "FIRSTNAME")
+    private String firstName;
+    @Column(name = "LASTNAME")
+    private String lastName;
+    @Column(name = "EMAIL")
+    private String email;
+    @Column(name = "PHONENUMBER")
+    private String phoneNumber;
+
+    @Embedded
     private CustomerAddress customerAddress;
+
+
+    private Customer() {
+    }
 
     public Customer(String firstName, String lastName, String email, String phoneNumber, CustomerAddress customerAddress) {
         this(UUID.randomUUID().toString(), firstName, lastName, email, phoneNumber, customerAddress);

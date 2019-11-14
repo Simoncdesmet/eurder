@@ -1,20 +1,34 @@
 package com.simon.eurder.domain.customer;
 
-import com.simon.eurder.domain.customer.Customer;
-import com.simon.eurder.domain.customer.CustomerAddress;
-import com.simon.eurder.domain.customer.CustomerRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-class CustomerRepositoryTest {
+import com.simon.eurder.domain.DomainTestApp;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-    CustomerRepository customerRepository;
-    Customer customer;
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = DomainTestApp.class)
+public class CustomerRepositoryTest {
+
+    @Value("${server.port}")
+    private int port;
+
+
+    private final CustomerDBRepository customerDBRepository;
+    private Customer customer;
+
+    @Autowired
+    public CustomerRepositoryTest(CustomerDBRepository customerDBRepository) {
+        this.customerDBRepository = customerDBRepository;
+    }
 
     @BeforeEach
     void setUp() {
-        customerRepository = new CustomerRepository();
+//        customerDBRepository.clearCustomers();
+
         CustomerAddress customerAddress = new CustomerAddress(
                 "Leeuwerikenstraat",
                 "101/3",
@@ -24,22 +38,37 @@ class CustomerRepositoryTest {
                 "Test001",
                 "Simon",
                 "Desmet",
-                "simoncdesmetgmail.com",
+                "simoncdesmet@gmail.com",
                 "0487/57.70.40",
-                customerAddress );
+                customerAddress);
+    }
+
+    @AfterEach
+    void tearDown() {
+        customerDBRepository.clearCustomers();
     }
 
     @Test
-    void beforeAddingCustomer_customerIsNotInRepository() {
-        Assertions.assertFalse(customerRepository.getCustomers().contains(customer));
+    void whenAddingCustomer_CustomerIsInDB() {
+        customerDBRepository.createCustomer(customer);
+        Assertions.assertEquals(1,
+                customerDBRepository.getCustomers().stream()
+                        .filter(c -> c.getCustomerID()
+                                .equals("Test001")).count());
+
     }
 
     @Test
-    void whenCreatingCustomer_customerIsInRepository() {
-        CustomerRepository customerRepository = new CustomerRepository();
-        customerRepository.createCustomer(customer);
+    void whenGettingAllCustomers_SizeIsOne() {
+        customerDBRepository.createCustomer(customer);
+        Assertions.assertEquals(1,
+                customerDBRepository.getCustomers().size());
+    }
 
-        Assertions.assertTrue(customerRepository.getCustomers().contains(customer));
-
+    @Test
+    void whenGettingCustomerTest001_returnsCustomer() {
+        customerDBRepository.createCustomer(customer);
+        Assertions.assertEquals("simoncdesmet@gmail.com",
+                customerDBRepository.getCustomerByID("Test001").getEmail());
     }
 }

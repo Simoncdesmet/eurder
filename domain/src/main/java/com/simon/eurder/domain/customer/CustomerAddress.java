@@ -1,11 +1,23 @@
 package com.simon.eurder.domain.customer;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+
+@Embeddable
 public class CustomerAddress {
 
+    @Column(name = "STREETNAME")
     private String streetName;
+    @Column(name = "STREETNUMBER")
     private String streetNumber;
+    @Column(name = "POSTALCODE")
     private String postalCode;
+    @Column(name = "CITY")
     private String city;
+
+    private CustomerAddress() {
+    }
 
     public CustomerAddress(String streetName, String streetNumber, String postalCode, String city) {
         this.streetName = streetName;

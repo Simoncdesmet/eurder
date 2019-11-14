@@ -50,11 +50,27 @@
             <groupId>com.simon.eurder</groupId>
             <artifactId>service</artifactId>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.simon.eurder</groupId>
+                    <artifactId>domain</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.simon.eurder</groupId>
             <artifactId>service</artifactId>
             <type>test-jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.simon.eurder</groupId>
+                    <artifactId>domain</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.simon.eurder</groupId>
+            <artifactId>domain</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
