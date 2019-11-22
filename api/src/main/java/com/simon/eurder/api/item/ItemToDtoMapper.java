@@ -7,11 +7,6 @@ import org.springframework.stereotype.Component;
 public class ItemToDtoMapper {
 
 
-    public Item updateItemDtoToItem(String itemID, CreateItemDto createItemDto) {
-        Item updatedItem = createItemDtoToItem(createItemDto);
-        updatedItem.setItemID(itemID);
-        return updatedItem;
-    }
 
     public Item createItemDtoToItem(CreateItemDto createItemDto) {
         return new Item(
@@ -23,7 +18,7 @@ public class ItemToDtoMapper {
 
     public ItemDto itemToDto(Item item) {
         return new ItemDto()
-                .withItemID(item.getItemID())
+                .withexternalID(item.getExternalId())
                 .withName(item.getName())
                 .withDescription(item.getDescription())
                 .withPriceInEuro(item.getPriceInEuro())

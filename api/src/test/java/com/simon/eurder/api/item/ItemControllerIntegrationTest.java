@@ -2,7 +2,6 @@ package com.simon.eurder.api.item;
 
 import com.simon.eurder.api.Application;
 import com.simon.eurder.api.RestAssuredTest;
-import com.simon.eurder.api.customer.CreateCustomerDto;
 import com.simon.eurder.domain.item.Item;
 import com.simon.eurder.service.item.ItemService;
 import io.restassured.RestAssured;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static io.restassured.http.ContentType.JSON;
@@ -30,7 +30,6 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
     private int port;
 
     private CreateItemDto createItemDto;
-    private Item itemToUpdate;
 
     @Autowired
     private ItemService itemService;
@@ -42,8 +41,6 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
                 .withDescription("Just a golf ball")
                 .withPriceInEuro("1")
                 .withAmountInStock("50");
-        itemToUpdate = new Item("Golf ball", "Golfball", "A normal golf ball", 1, 50);
-        itemService.createItem(itemToUpdate);
     }
 
     @AfterEach
@@ -51,6 +48,7 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
         itemService.clearItems();
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql"})
     @Test
     void whenCreatingItem_itemIsCreated() {
                 RestAssured
@@ -66,6 +64,7 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
                         .statusCode(HttpStatus.CREATED.value());
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-item.sql"})
     @Test
     void whenCreatingItemWithoutPrice_returnsBadRequest() {
 
@@ -87,6 +86,7 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql"})
     @Test
     void whenCreatingItemWithStringsInPrice_returnsBadRequest() {
 
@@ -109,6 +109,7 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-item.sql"})
     @Test
     void whenUpdatingItemWithNewAmount_amountIsUpdated() {
 
@@ -125,16 +126,17 @@ class ItemControllerIntegrationTest extends RestAssuredTest {
                 .contentType(JSON)
                 .when()
                 .port(8922)
-                .put("api/v1/items/" + itemToUpdate.getItemID())
+                .put("api/v1/items/" + "Golf ball")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value()).extract().as(ItemDto.class);
 
-        assertEquals(updatedItemDto.getItemID(), updatedItemDto.getItemID());
+        assertEquals(updatedItemDto.getExternalID(), updatedItemDto.getExternalID());
         assertEquals(updatedItemDto.getAmountInStock(), 60);
 
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenUpdatingItemWithNonExistingID_returnsBadRequest() {
 

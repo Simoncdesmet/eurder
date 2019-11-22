@@ -3,6 +3,7 @@ package com.simon.eurder.service.order;
 import com.simon.eurder.domain.item.Item;
 import com.simon.eurder.domain.order.ItemGroup;
 import com.simon.eurder.domain.order.Order;
+import com.simon.eurder.repository.OrderRepository;
 import com.simon.eurder.service.ServiceTestApp;
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.service.item.ItemService;
@@ -30,67 +31,69 @@ class OrderServiceTest {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
     private ItemService itemService;
+
+    @Autowired
     private OrderService orderService;
 
     @BeforeEach
     void setUp() {
-        ServiceTestSetup setUp = new ServiceTestSetup();
-        itemService = setUp.createItemServiceWithGolfBallInRepository();
-        orderService = setUp.setUpOrderService(itemService, customerService);
+        orderService.clearOrders();
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenCreatingOrderThroughService_orderForCustomerIDIsInRepository() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
-        orderService.createOrder(order.getItemGroups(),order.getCustomerID());
+        orderService.createOrder(order.getItemGroups(), order.getCustomerID());
         assertTrue(orderService.getAllOrders().stream()
                 .map(Order::getCustomerID).collect(Collectors.toList())
                 .contains(order.getCustomerID()));
     }
 
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenCreatingOrderOf50GolfBalls_totalPriceOfOrderIs50() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
-        Order loggedOrder = orderService.createOrder(order.getItemGroups(),order.getCustomerID());
+        Order loggedOrder = orderService.createOrder(order.getItemGroups(), order.getCustomerID());
         assertEquals(50, loggedOrder.getTotalPrice());
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenCreatingOrderWithItemThatDoesntExist_exceptionIsThrown() {
         Order wrongOrder = prepareSingleLineOrder("Non-existing Golf ball", 50);
-        Assertions.assertThatThrownBy(() -> orderService.createOrder(wrongOrder.getItemGroups(),wrongOrder.getCustomerID()))
+        Assertions.assertThatThrownBy(() -> orderService.createOrder(wrongOrder.getItemGroups(), wrongOrder.getCustomerID()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No item found with this id.");
+                .hasMessage("This item does not exist!");
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenCreatingOrderWithEnoughStockAvailable_ShippingDateIsNextDay() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
-        orderService.createOrder(order.getItemGroups(),order.getCustomerID());
+        orderService.createOrder(order.getItemGroups(), order.getCustomerID());
         assertEquals(orderService.getAllOrders().get(0)
                 .getItemGroups().get(0)
                 .getShippingDate(), LocalDate.now().plus(1, ChronoUnit.DAYS));
 
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenCreatingOrderWithNotEnoughStockAvailable_ShippingDateIsNextWeek() {
         Order newOrder = prepareSingleLineOrder("Golf ball", 60);
 
-        orderService.createOrder(newOrder.getItemGroups(),newOrder.getCustomerID());
+        orderService.createOrder(newOrder.getItemGroups(), newOrder.getCustomerID());
         assertEquals(orderService.getAllOrders().get(0)
                 .getItemGroups().get(0)
                 .getShippingDate(), LocalDate.now().plus(7, ChronoUnit.DAYS));
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenCreatingOrderWithNonExistingCustomer_thenExceptionIsThrown() {
         Order orderWithNotExistingCustomer = new Order(
@@ -98,21 +101,21 @@ class OrderServiceTest {
                 "FakeCustomerID");
 
         Assertions.assertThatThrownBy(() -> orderService.createOrder(
-                orderWithNotExistingCustomer.getItemGroups(),orderWithNotExistingCustomer.getCustomerID()))
+                orderWithNotExistingCustomer.getItemGroups(), orderWithNotExistingCustomer.getCustomerID()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("No customer found with this id.");
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenPlacingOrder_itemNameIsAddedToItemGroups() {
         Order order = prepareSingleLineOrder("Golf ball", 10);
-        orderService.createOrder(order.getItemGroups(),order.getCustomerID());
+        orderService.createOrder(order.getItemGroups(), order.getCustomerID());
         assertEquals(orderService.getAllOrders().get(0)
                 .getItemGroups().get(0).getItemName(), "Golf ball");
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenGettingOrderReportForCustomer_printOutIsReturned() {
         Order loggedOrder = createLoggedOrder();
@@ -122,7 +125,7 @@ class OrderServiceTest {
         assertTrue(orderSummary.contains("Order with id: " + loggedOrder.getOrderID()));
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenReordering_orderIsRecreated() {
         Order loggedOrder = createLoggedOrder();
@@ -132,7 +135,7 @@ class OrderServiceTest {
         assertNotEquals(reorderedOrder.getOrderID(), loggedOrder.getOrderID());
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenReorderingOrderWhereThirdItemGroupWillBeOutOfStock_OnlyThirdItemGroupHasShippingDateOfNextWeek() {
         Order loggedOrder = createLoggedOrder();
@@ -143,12 +146,12 @@ class OrderServiceTest {
         assertEquals(reorderedOrder.getItemGroups().get(2).getShippingDate(), LocalDate.now().plus(7, ChronoUnit.DAYS));
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void givenUpdatedItem_whenReorderingOrder_orderUsesNewItemInformation() {
         Order newOrder = prepareOrderOfThirtyGolfBallsInThreeLines();
 
-        Order loggedOrder = orderService.createOrder(newOrder.getItemGroups(),newOrder.getCustomerID());
+        Order loggedOrder = orderService.createOrder(newOrder.getItemGroups(), newOrder.getCustomerID());
         updateGolfBallItem();
         Order reorderedOrder = orderService.reorder(loggedOrder.getOrderID());
 
@@ -159,7 +162,7 @@ class OrderServiceTest {
                 .collect(Collectors.toList()).contains("Updated golf ball"));
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void givenUpdatedItem_whenReorderingOrder_oldOrderStaysTheSame() {
         Order loggedOrder = createLoggedOrder();
@@ -174,7 +177,7 @@ class OrderServiceTest {
 
     private Order createLoggedOrder() {
         Order order = prepareOrderOfThirtyGolfBallsInThreeLines();
-        return orderService.createOrder(order.getItemGroups(),order.getCustomerID());
+        return orderService.createOrder(order.getItemGroups(), order.getCustomerID());
     }
 
     private void updateGolfBallItem() {
@@ -190,9 +193,9 @@ class OrderServiceTest {
                 customerService.getAllCustomers().get(0).getCustomerID());
     }
 
-    private Order prepareSingleLineOrder(String itemID, int amount) {
+    private Order prepareSingleLineOrder(String externalItemId, int amount) {
         return new Order(
-                List.of(new ItemGroup(itemID, amount)),
+                List.of(new ItemGroup(externalItemId, amount)),
                 customerService.getAllCustomers().get(0).getCustomerID());
     }
 }

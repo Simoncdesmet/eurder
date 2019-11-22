@@ -3,14 +3,14 @@ package com.simon.eurder.api.item;
 public class ItemDto {
 
 
-    private String itemID;
+    private String externalID;
     private String name, description;
     private double priceInEuro;
     private int amountInStock;
 
 
-    public ItemDto withItemID(String itemID) {
-        this.itemID = itemID;
+    public ItemDto withexternalID(String itemID) {
+        this.externalID = itemID;
         return this;
     }
 
@@ -34,8 +34,8 @@ public class ItemDto {
         return this;
     }
 
-    public String getItemID() {
-        return itemID;
+    public String getExternalID() {
+        return externalID;
     }
 
     public String getName() {

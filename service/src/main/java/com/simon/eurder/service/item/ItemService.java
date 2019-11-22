@@ -3,11 +3,13 @@ package com.simon.eurder.service.item;
 import com.simon.eurder.domain.item.Item;
 import com.simon.eurder.repository.ItemRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 @Component
+@Transactional
 public class ItemService {
 
     private final ItemRepository itemRepository;
@@ -19,17 +21,24 @@ public class ItemService {
 
     public void createItem(Item itemToCreate) {
 
-        itemRepository.createItem(itemToCreate);
+        itemRepository.save(itemToCreate);
     }
 
-    public void updateItem(String itemID, Item updatedItem) {
-        if (!itemExists(itemID)) throw new IllegalArgumentException("This item does not exist!");
-        itemRepository.updateItem(itemID, updatedItem);
+    public Item updateItem(String itemID, Item updatedItem) {
+        Item foundItem = getItemByID(itemID);
+        foundItem.setAmountInStock(updatedItem.getAmountInStock());
+        foundItem.setName(updatedItem.getName());
+        foundItem.setDescription(updatedItem.getDescription());
+        foundItem.setPriceInEuro(updatedItem.getPriceInEuro());
+        return foundItem;
     }
 
 
     public Item getItemByID(String itemID) {
-        return itemRepository.getItemByID(itemID);
+
+        return itemRepository.findByExternalId(itemID).orElseThrow(
+                () -> new IllegalArgumentException("This item does not exist!"));
+
     }
 
 
@@ -69,6 +78,6 @@ public class ItemService {
     }
 
     public void clearItems() {
-        itemRepository.clearItems();
+        itemRepository.deleteAll();
     }
 }

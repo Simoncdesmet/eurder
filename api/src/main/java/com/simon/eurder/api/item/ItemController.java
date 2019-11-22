@@ -51,9 +51,7 @@ public class ItemController {
         itemInputValidator.validateDtoInput(createItemDto);
         Item updatedItem = itemToDtoMapper.createItemDtoToItem(createItemDto);
         logger.info("Updating item...");
-        itemService.updateItem(itemID, updatedItem);
-        logger.info("Returning item...");
-        return itemToDtoMapper.itemToDto(updatedItem);
+       return itemToDtoMapper.itemToDto(itemService.updateItem(itemID, updatedItem));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

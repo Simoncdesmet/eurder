@@ -37,24 +37,11 @@ class OrderControllerTest extends RestAssuredTest {
 
     @Autowired
     private OrderService orderService;
+
     @Autowired
     private ItemService itemService;
 
-
-    @BeforeEach
-    void setUp() {
-
-        Item item = createItem();
-        itemService.createItem(item);
-    }
-
-    @AfterEach
-    void tearDown() {
-        orderService.clearOrders();
-        itemService.clearItems();
-    }
-
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenPostingRequestForOrder_orderIsCorrectlyCreated() {
 
@@ -75,7 +62,7 @@ class OrderControllerTest extends RestAssuredTest {
 
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenPostingRequestForOrderWithoutAmount_returnsBadRequest() {
 
@@ -98,7 +85,7 @@ class OrderControllerTest extends RestAssuredTest {
         assertTrue(result.contains("You need to buy at least 1 copy of each item!"));
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenPostingRequestForOrderWithoutNegativeAmount_returnsBadRequest() {
 
@@ -121,7 +108,7 @@ class OrderControllerTest extends RestAssuredTest {
         assertTrue(result.contains("You need to buy at least 1 copy of each item!"));
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenPlacingOrder_amountInStockIsUpdated() {
         String result = RestAssured
@@ -139,7 +126,7 @@ class OrderControllerTest extends RestAssuredTest {
         assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 20);
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenPlacingOrderThatExceedsStock_amountInReorderIsUpdated() {
         String result = RestAssured
@@ -160,7 +147,7 @@ class OrderControllerTest extends RestAssuredTest {
         assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 0);
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenPlacingMultipleOrdersThatExceedsStock_amountInReorderIsUpdated() {
 
@@ -194,14 +181,7 @@ class OrderControllerTest extends RestAssuredTest {
         assertEquals(itemService.getItemByID("Golf ball").getAmountInStock(), 0);
     }
 
-    private Item createItem() {
-        return new Item(
-                "Golf ball",
-                "Golf ball",
-                "A golf ball",
-                1,
-                50);
-    }
+
 
     private ItemGroupDtoWrapper createOrderRequest(String itemID, int amount) {
         return new ItemGroupDtoWrapper()

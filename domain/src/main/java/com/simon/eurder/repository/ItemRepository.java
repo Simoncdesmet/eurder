@@ -1,37 +1,15 @@
 package com.simon.eurder.repository;
 
 import com.simon.eurder.domain.item.Item;
-import org.springframework.stereotype.Component;
+import org.springframework.data.repository.CrudRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Optional;
 
-@Component
-public class ItemRepository {
+public interface ItemRepository extends CrudRepository<Item, Long> {
 
-
-    private Map<String, Item> itemsByID = new ConcurrentHashMap<>();
+    List<Item> findAll();
+    Optional<Item> findByExternalId(String id);
 
 
-    public List<Item> getAllItems() {
-        return new ArrayList<>(itemsByID.values());
-    }
-
-    public void createItem(Item itemToCreate) {
-        itemsByID.put(itemToCreate.getItemID(), itemToCreate);
-    }
-
-    public Item getItemByID(String itemID) {
-        return itemsByID.get(itemID);
-    }
-
-    public void updateItem(String itemID, Item item) {
-        itemsByID.put(itemID, item);
-    }
-
-    public void clearItems() {
-        itemsByID = new ConcurrentHashMap<>();
-    }
 }

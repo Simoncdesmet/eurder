@@ -1,11 +1,11 @@
 package com.simon.eurder.service.shipment;
 
 import com.simon.eurder.domain.order.ItemGroup;
+import com.simon.eurder.repository.OrderRepository;
 import com.simon.eurder.service.ServiceTestApp;
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.service.item.ItemService;
-import com.simon.eurder.service.order.OrderService;
-import com.simon.eurder.service.order.ServiceTestSetup;
+import com.simon.eurder.service.order.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,12 +37,18 @@ class ShipmentServiceTest {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private ItemService itemService;
+
     @BeforeEach
     void setUp() {
-        ServiceTestSetup setUp = new ServiceTestSetup();
-        ItemService itemService = setUp.createItemServiceWithGolfBallInRepository();
+        OrderService orderService = new OrderService(
+                new OrderRepository(),
+                new OrderValidator(itemService, customerService),
+                new OrderPriceCalculator(itemService),
+                itemService,
+                new OrderReportService());
 
-        OrderService orderService = setUp.setUpOrderService(itemService, customerService);
         orderService.createOrder(List.of(new ItemGroup("Golf ball", 10)), "Test001");
         orderService.createOrder(List.of(new ItemGroup("Golf ball", 15)), "Test001");
         orderService.createOrder(List.of(new ItemGroup("Golf ball", 25)), "Test001");
@@ -50,7 +56,7 @@ class ShipmentServiceTest {
         shipmentService = new ShipmentService(orderService, customerService);
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void given4Orders_whenGettingShipmentStatementForTomorrow_containsThreeOrders() {
         Assertions.assertThat(shipmentService.getShippingOverviewForDay(
@@ -61,14 +67,14 @@ class ShipmentServiceTest {
                 LocalDate.now().plus(1, ChronoUnit.DAYS))).contains("ordered: 25");
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void given4Orders_whenGettingShipmentStatementForTomorrow_doesNotContainOutOfStockOrder() {
         assertFalse(shipmentService.getShippingOverviewForDay(
                 LocalDate.now().plus(1, ChronoUnit.DAYS)).contains("ordered: 20"));
     }
 
-    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void given4Orders_whenGettingShipmentStatementForNextWeek_ContainsOutOfStockOrder() {
         assertTrue(shipmentService.getShippingOverviewForDay(
