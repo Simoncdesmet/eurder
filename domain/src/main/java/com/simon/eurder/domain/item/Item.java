@@ -13,7 +13,7 @@ public class Item {
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "item_seq")
     @SequenceGenerator(name = "item_seq", sequenceName = "item_seq", allocationSize = 1)
-    private long itemID;
+    private long internalId;
 
     @Column(name = "NAME")
     private String name;
@@ -38,7 +38,6 @@ public class Item {
 
 
     public Item(String name, String description, double priceInEuro, int amountInStock) {
-        this.itemID = itemID;
         this.name = name;
         this.description = description;
         this.priceInEuro = priceInEuro;
@@ -47,12 +46,12 @@ public class Item {
         this.externalId = UUID.randomUUID().toString();
     }
 
-    public void setItemID(long itemID) {
-        this.itemID = itemID;
+    public void setInternalId(long internalId) {
+        this.internalId = internalId;
     }
 
-    public long getItemID() {
-        return itemID;
+    public long getInternalId() {
+        return internalId;
     }
 
     public void setName(String name) {

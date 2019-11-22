@@ -1,20 +1,38 @@
 package com.simon.eurder.domain.order;
 
-import java.time.LocalDate;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Entity
+@Table(name = "ORDERS")
 public class Order {
 
-    private String orderID;
-    private List<ItemGroup> itemGroups;
+    @Id
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
+    @SequenceGenerator(name = "order_seq", sequenceName = "order_seq", allocationSize = 1)
+    private long internalID;
+
+    @Column(name = "EXTERNAL_ID")
+    private String externalId;
+
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ORDER_ID")
+    private List<ItemGroup> itemGroups = new ArrayList<>();
+
+    @Column(name = "TOTAL_PRICE")
     private double totalPrice;
+
+    @Column(name = "CUSTOMER_ID")
     private String customerID;
 
+    public Order() {
+    }
 
     public Order(List<ItemGroup> itemGroups, String customerID) {
-        this.orderID = UUID.randomUUID().toString();
+        this.externalId = UUID.randomUUID().toString();
         this.itemGroups = itemGroups;
         this.customerID = customerID;
     }
@@ -35,7 +53,7 @@ public class Order {
         return customerID;
     }
 
-    public String getOrderID() {
-        return orderID;
+    public String getExternalId() {
+        return externalId;
     }
 }

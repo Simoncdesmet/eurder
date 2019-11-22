@@ -2,48 +2,42 @@ package com.simon.eurder.domain.order;
 
 import com.simon.eurder.domain.customer.Customer;
 import com.simon.eurder.domain.customer.CustomerAddress;
+import com.simon.eurder.repository.OrderCrudRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.simon.eurder.repository.OrderRepository;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@AutoConfigureTestDatabase
+@SpringBootTest
 class OrderRepositoryTest {
 
-    private Customer customer;
-    private OrderRepository orderRepository;
+    @Autowired
+    private OrderCrudRepository orderRepository;
 
-    @BeforeEach
-    void setUp() {
-
-        CustomerAddress customerAddress = new CustomerAddress(
-                "Leeuwerikenstraat",
-                "101/3",
-                "3001",
-                "Heverlee");
-
-        customer = new Customer(
-                "Test001",
-                "Simon",
-                "Desmet",
-                "simoncdesmetgmail.com",
-                "0487/57.70.40",
-                customerAddress);
-
-        orderRepository = new OrderRepository();
-    }
-
+    @Sql(scripts = {"classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenCreatingOrder_orderIsInRepository() {
 
         Order order = new Order(
                 List.of(new ItemGroup("Golf ball", 50)),
-                customer.getCustomerID());
+                "Test001");
 
-        orderRepository.createOrder(order);
-        assertTrue(orderRepository.getAllOrders().contains(order));
+        orderRepository.save(order);
+        assertTrue(orderRepository.findAll()
+                .stream().map(Order::getExternalId)
+                .collect(Collectors.toList())
+                .contains(order.getExternalId()));
 
     }
 }

@@ -51,7 +51,7 @@ public class ShipmentService {
         return new ShippingGroup()
                 .withDestinationAddress(customerService.getCustomerByID(order.getCustomerID()).getCustomerAddress())
                 .withItemsToShip(getItemGroupsForDay(order, dateOfShipping))
-                .withOrderID(order.getOrderID())
+                .withOrderID(order.getExternalId())
                 .withShippingDate(dateOfShipping);
     }
 

@@ -1,11 +1,7 @@
 package com.simon.eurder.service.shipment;
 
 import com.simon.eurder.domain.order.ItemGroup;
-import com.simon.eurder.repository.OrderRepository;
-import com.simon.eurder.service.ServiceTestApp;
-import com.simon.eurder.service.customer.CustomerService;
-import com.simon.eurder.service.item.ItemService;
-import com.simon.eurder.service.order.*;
+import com.simon.eurder.service.order.OrderService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,31 +25,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
 class ShipmentServiceTest {
 
-    private ServiceTestSetup setUp;
 
     @Autowired
     private ShipmentService shipmentService;
 
     @Autowired
-    private CustomerService customerService;
-
-    @Autowired
-    private ItemService itemService;
+    private OrderService orderService;
 
     @BeforeEach
     void setUp() {
-        OrderService orderService = new OrderService(
-                new OrderRepository(),
-                new OrderValidator(itemService, customerService),
-                new OrderPriceCalculator(itemService),
-                itemService,
-                new OrderReportService());
 
         orderService.createOrder(List.of(new ItemGroup("Golf ball", 10)), "Test001");
         orderService.createOrder(List.of(new ItemGroup("Golf ball", 15)), "Test001");
         orderService.createOrder(List.of(new ItemGroup("Golf ball", 25)), "Test001");
         orderService.createOrder(List.of(new ItemGroup("Golf ball", 20)), "Test001");
-        shipmentService = new ShipmentService(orderService, customerService);
     }
 
     @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})

@@ -3,8 +3,6 @@ package com.simon.eurder.service.order;
 import com.simon.eurder.domain.item.Item;
 import com.simon.eurder.domain.order.ItemGroup;
 import com.simon.eurder.domain.order.Order;
-import com.simon.eurder.repository.OrderRepository;
-import com.simon.eurder.service.ServiceTestApp;
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.service.item.ItemService;
 import org.assertj.core.api.Assertions;
@@ -122,24 +120,24 @@ class OrderServiceTest {
         String orderSummary = orderService.createOrderSummary(loggedOrder);
 
         assertTrue(orderSummary.contains("Total price for order is: 30.0"));
-        assertTrue(orderSummary.contains("Order with id: " + loggedOrder.getOrderID()));
+        assertTrue(orderSummary.contains("Order with id: " + loggedOrder.getExternalId()));
     }
 
     @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenReordering_orderIsRecreated() {
         Order loggedOrder = createLoggedOrder();
-        Order reorderedOrder = orderService.reorder(loggedOrder.getOrderID());
+        Order reorderedOrder = orderService.reorder(loggedOrder.getExternalId());
         assertEquals(reorderedOrder.getCustomerID(), loggedOrder.getCustomerID());
         assertEquals(reorderedOrder.getTotalPrice(), loggedOrder.getTotalPrice());
-        assertNotEquals(reorderedOrder.getOrderID(), loggedOrder.getOrderID());
+        assertNotEquals(reorderedOrder.getExternalId(), loggedOrder.getExternalId());
     }
 
     @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql", "classpath:create-item.sql"})
     @Test
     void whenReorderingOrderWhereThirdItemGroupWillBeOutOfStock_OnlyThirdItemGroupHasShippingDateOfNextWeek() {
         Order loggedOrder = createLoggedOrder();
-        Order reorderedOrder = orderService.reorder(loggedOrder.getOrderID());
+        Order reorderedOrder = orderService.reorder(loggedOrder.getExternalId());
 
         assertEquals(reorderedOrder.getItemGroups().get(0).getShippingDate(), LocalDate.now().plus(1, ChronoUnit.DAYS));
         assertEquals(reorderedOrder.getItemGroups().get(1).getShippingDate(), LocalDate.now().plus(1, ChronoUnit.DAYS));
@@ -153,7 +151,7 @@ class OrderServiceTest {
 
         Order loggedOrder = orderService.createOrder(newOrder.getItemGroups(), newOrder.getCustomerID());
         updateGolfBallItem();
-        Order reorderedOrder = orderService.reorder(loggedOrder.getOrderID());
+        Order reorderedOrder = orderService.reorder(loggedOrder.getExternalId());
 
         assertEquals(reorderedOrder.getTotalPrice(), 60);
         assertTrue(reorderedOrder.getItemGroups()
@@ -167,7 +165,7 @@ class OrderServiceTest {
     void givenUpdatedItem_whenReorderingOrder_oldOrderStaysTheSame() {
         Order loggedOrder = createLoggedOrder();
         updateGolfBallItem();
-        orderService.reorder(loggedOrder.getOrderID());
+        orderService.reorder(loggedOrder.getExternalId());
         assertEquals(loggedOrder.getTotalPrice(), 30);
         assertFalse(loggedOrder.getItemGroups()
                 .stream()

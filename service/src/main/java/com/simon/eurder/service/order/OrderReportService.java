@@ -23,7 +23,7 @@ public class OrderReportService {
 
     public String getOrderPrintOut(Order order) {
         StringJoiner orderPrintout = new StringJoiner("\r\n", "-----------------", "-----------------");
-        orderPrintout.add("\r\n"+"Order with id: " + order.getOrderID());
+        orderPrintout.add("\r\n"+"Order with id: " + order.getExternalId());
         orderPrintout.add(getItemPrintOutForOrder(order));
         orderPrintout.add(displayOrderTotal(order)+"\r\n");
         return orderPrintout.toString();
