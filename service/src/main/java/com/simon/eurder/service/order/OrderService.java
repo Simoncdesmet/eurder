@@ -6,6 +6,7 @@ import com.simon.eurder.repository.OrderCrudRepository;
 import com.simon.eurder.service.item.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Component
+@Transactional
 public class OrderService {
 
 
@@ -34,13 +36,9 @@ public class OrderService {
 
     public Order createOrder(List<ItemGroup> itemGroups, String customerID) {
         Order order = new Order(itemGroups.stream()
-                .map(itemGroup -> new ItemGroup
-                        (
-                        itemGroup.getItemID(),
+                .map(itemGroup -> new ItemGroup(itemGroup.getItemID(),
                         itemService.getItemByID(itemGroup.getItemID()).getName(),
-                        itemGroup.getAmount()
-                        )
-                )
+                        itemGroup.getAmount()))
                 .collect(Collectors.toList()), customerID);
         orderValidator.validateOrder(order);
         setItemNames(order);

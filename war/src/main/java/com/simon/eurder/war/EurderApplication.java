@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(scanBasePackages = "com.simon.eurder")
 @EntityScan(basePackages = "com.simon.eurder")
 @EnableJpaRepositories(basePackages = "com.simon.eurder.repository")
-
 public class EurderApplication {
 
     public static void main(String[] args) {

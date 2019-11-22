@@ -65,6 +65,7 @@ public class ItemGroup {
         this.itemGroupPrice = itemGroupPrice;
     }
 
+
     @Override
     public String toString() {
         return "Item " + itemID + " - name: " + itemName + "\r\n" +

@@ -28,6 +28,8 @@ public class Order {
     @Column(name = "CUSTOMER_ID")
     private String customerID;
 
+
+
     public Order() {
     }
 
@@ -56,4 +58,6 @@ public class Order {
     public String getExternalId() {
         return externalId;
     }
+
+
 }

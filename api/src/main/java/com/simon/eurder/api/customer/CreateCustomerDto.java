@@ -2,8 +2,14 @@ package com.simon.eurder.api.customer;
 
 public class CreateCustomerDto {
 
-    private String firstName, lastName, email, phoneNumber;
-    private String streetName, streetNumber, postalCode, city;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
+    private String streetName;
+    private String streetNumber;
+    private String postalCode;
+    private String city;
 
     public CreateCustomerDto withFirstName(String firstName) {
         this.firstName = firstName;
