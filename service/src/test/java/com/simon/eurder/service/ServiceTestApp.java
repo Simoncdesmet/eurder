@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.simon.eurder.repository")
 public class ServiceTestApp {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ServiceTestApp.class, args);
-    }
+//    public static void main(String[] args) {
+//        SpringApplication.run(ServiceTestApp.class, args);
+//    }
 }

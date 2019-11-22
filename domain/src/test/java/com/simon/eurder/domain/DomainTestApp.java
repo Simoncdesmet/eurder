@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.simon.eurder.repository")
 public class DomainTestApp {
 
-    public static void main(String[] args) {
-        SpringApplication.run(DomainTestApp.class, args);
-    }
+//    public static void main(String[] args) {
+//        SpringApplication.run(DomainTestApp.class, args);
+//    }
 }
