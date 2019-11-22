@@ -6,9 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.PropertySource;
 
-import javax.persistence.Entity;
-
-@PropertySource("classpath:apiapp.properties")
+@PropertySource("classpath:test.properties")
 @EntityScan(basePackages = "com.simon.eurder")
 @SpringBootApplication(scanBasePackages = "com.simon.eurder", exclude={SecurityAutoConfiguration.class})
 public class Application {

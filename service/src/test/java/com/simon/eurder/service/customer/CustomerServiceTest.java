@@ -2,10 +2,8 @@ package com.simon.eurder.service.customer;
 
 import com.simon.eurder.domain.customer.Customer;
 import com.simon.eurder.domain.customer.CustomerAddress;
-import com.simon.eurder.domain.customer.CustomerDBRepository;
-import com.simon.eurder.repository.CustomerCrudRepository;
+import com.simon.eurder.repository.CustomerRepository;
 import com.simon.eurder.service.ServiceTestApp;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class CustomerServiceTest {
 
     @Autowired
-    CustomerCrudRepository customerRepository;
+    CustomerRepository customerRepository;
 
     @Autowired
     private CustomerService customerService;

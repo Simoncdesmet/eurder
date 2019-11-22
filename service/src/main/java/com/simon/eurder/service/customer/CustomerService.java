@@ -1,19 +1,21 @@
 package com.simon.eurder.service.customer;
 
 import com.simon.eurder.domain.customer.Customer;
-import com.simon.eurder.repository.CustomerCrudRepository;
+import com.simon.eurder.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
+@Transactional
 public class CustomerService {
 
-    private final CustomerCrudRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
     @Autowired
-    public CustomerService(CustomerCrudRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 

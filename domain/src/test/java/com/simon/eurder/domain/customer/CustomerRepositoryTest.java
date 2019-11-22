@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import com.simon.eurder.repository.CustomerCrudRepository;
+import com.simon.eurder.repository.CustomerRepository;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = DomainTestApp.class)
@@ -19,13 +19,12 @@ public class CustomerRepositoryTest {
     private int port;
 
     @Autowired
-    private CustomerCrudRepository customerCrudRepository;
+    private CustomerRepository customerRepository;
     private Customer customer;
 
 
     @BeforeEach
     void setUp() {
-//        customerDBRepository.clearCustomers();
 
         CustomerAddress customerAddress = new CustomerAddress(
                 "Leeuwerikenstraat",
@@ -45,9 +44,9 @@ public class CustomerRepositoryTest {
     @Sql(scripts = {"classpath:delete-rows.sql"})
     @Test
     void whenAddingCustomer_CustomerIsInDB() {
-        customerCrudRepository.save(customer);
+        customerRepository.save(customer);
         Assertions.assertEquals(1,
-                customerCrudRepository.findByCustomerID(customer.getCustomerID()).stream()
+                customerRepository.findByCustomerID(customer.getCustomerID()).stream()
                         .filter(c -> c.getCustomerID()
                                 .equals("Test001")).count());
 
@@ -57,13 +56,13 @@ public class CustomerRepositoryTest {
     @Test
     void whenGettingAllCustomers_SizeIsOne() {
         Assertions.assertEquals(1,
-                customerCrudRepository.findAll().size());
+                customerRepository.findAll().size());
     }
 
     @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenGettingCustomerTest001_returnsCustomer() {
         Assertions.assertEquals("simoncdesmet@gmail.com",
-                customerCrudRepository.findByCustomerID("Test001").get().getEmail());
+                customerRepository.findByCustomerID("Test001").get().getEmail());
     }
 }
