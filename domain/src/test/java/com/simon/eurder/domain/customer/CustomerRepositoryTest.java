@@ -7,7 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import com.simon.eurder.repository.CustomerCrudRepository;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = DomainTestApp.class)
@@ -16,14 +18,10 @@ public class CustomerRepositoryTest {
     @Value("${server.port}")
     private int port;
 
-
-    private final CustomerDBRepository customerDBRepository;
+    @Autowired
+    private CustomerCrudRepository customerCrudRepository;
     private Customer customer;
 
-    @Autowired
-    public CustomerRepositoryTest(CustomerDBRepository customerDBRepository) {
-        this.customerDBRepository = customerDBRepository;
-    }
 
     @BeforeEach
     void setUp() {
@@ -43,32 +41,29 @@ public class CustomerRepositoryTest {
                 customerAddress);
     }
 
-    @AfterEach
-    void tearDown() {
-        customerDBRepository.clearCustomers();
-    }
 
+    @Sql(scripts = {"classpath:delete-rows.sql"})
     @Test
     void whenAddingCustomer_CustomerIsInDB() {
-        customerDBRepository.createCustomer(customer);
+        customerCrudRepository.save(customer);
         Assertions.assertEquals(1,
-                customerDBRepository.getCustomers().stream()
+                customerCrudRepository.findByCustomerID(customer.getCustomerID()).stream()
                         .filter(c -> c.getCustomerID()
                                 .equals("Test001")).count());
 
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenGettingAllCustomers_SizeIsOne() {
-        customerDBRepository.createCustomer(customer);
         Assertions.assertEquals(1,
-                customerDBRepository.getCustomers().size());
+                customerCrudRepository.findAll().size());
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenGettingCustomerTest001_returnsCustomer() {
-        customerDBRepository.createCustomer(customer);
         Assertions.assertEquals("simoncdesmet@gmail.com",
-                customerDBRepository.getCustomerByID("Test001").getEmail());
+                customerCrudRepository.findByCustomerID("Test001").get().getEmail());
     }
 }

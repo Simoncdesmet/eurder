@@ -2,6 +2,7 @@ package com.simon.eurder.domain.item;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.simon.eurder.repository.ItemRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 

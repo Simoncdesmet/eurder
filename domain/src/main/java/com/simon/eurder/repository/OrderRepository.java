@@ -1,5 +1,6 @@
-package com.simon.eurder.domain.order;
+package com.simon.eurder.repository;
 
+import com.simon.eurder.domain.order.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

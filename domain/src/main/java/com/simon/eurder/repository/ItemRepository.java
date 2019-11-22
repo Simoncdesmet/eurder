@@ -1,5 +1,6 @@
-package com.simon.eurder.domain.item;
+package com.simon.eurder.repository;
 
+import com.simon.eurder.domain.item.Item;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

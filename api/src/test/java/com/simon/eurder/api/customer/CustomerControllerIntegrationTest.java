@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -45,11 +46,8 @@ class CustomerControllerIntegrationTest extends RestAssuredTest {
                 .withStreetNumber("101/3");
     }
 
-    @AfterEach
-    void tearDown() {
-        customerService.clearCustomers();
-    }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenCreatingCustomer_customerIsInCreated() {
 
@@ -67,20 +65,10 @@ class CustomerControllerIntegrationTest extends RestAssuredTest {
 
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void givenRepositoryWith1Customer_whenGettingAllCustomers_returnsAllCustomers() {
 
-        RestAssured
-                .given()
-                .body(createCustomerDto)
-                .accept(JSON)
-                .contentType(JSON)
-                .when()
-                .port(8922)
-                .post("api/v1/customers")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value());
 
         List<CustomerDto> customers =
                 RestAssured
@@ -102,20 +90,10 @@ class CustomerControllerIntegrationTest extends RestAssuredTest {
                 .anyMatch(customer -> customer.equals("simoncdesmet@gmail.com"))).isEqualTo(true);
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void givenRepositoryWithCustomer_whenGettingCustomerByID_returnsCustomer() {
 
-        CustomerDto customer = RestAssured
-                .given()
-                .body(createCustomerDto)
-                .accept(JSON)
-                .contentType(JSON)
-                .when()
-                .port(8922)
-                .post("api/v1/customers")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.CREATED.value()).extract().as(CustomerDto.class);
 
         CustomerDto gotCustomer =
                 RestAssured
@@ -123,19 +101,20 @@ class CustomerControllerIntegrationTest extends RestAssuredTest {
                         .contentType(JSON)
                         .when()
                         .port(8922)
-                        .get("api/v1/customers/"+customer.getCustomerID())
+                        .get("api/v1/customers/"+"Test001")
                         .then()
                         .assertThat()
                         .statusCode(HttpStatus.OK.value())
                         .extract()
                         .as(CustomerDto.class);
 
-        Assertions.assertThat(gotCustomer.getCustomerID()).isEqualTo(customer.getCustomerID());
-        Assertions.assertThat(gotCustomer.getEmail()).isEqualTo(customer.getEmail());
-        Assertions.assertThat(gotCustomer.getCity()).isEqualTo(customer.getCity());
+        Assertions.assertThat(gotCustomer.getCustomerID()).isEqualTo("Test001");
+        Assertions.assertThat(gotCustomer.getEmail()).isEqualTo("simoncdesmet@gmail.com");
+        Assertions.assertThat(gotCustomer.getCity()).isEqualTo("Leuven");
 
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void givenNonExistingCustomerID_whenGettingCustomerByID_returnsBadRequest() {
 

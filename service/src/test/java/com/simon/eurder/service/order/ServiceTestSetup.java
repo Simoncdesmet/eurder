@@ -2,14 +2,13 @@ package com.simon.eurder.service.order;
 
 import com.simon.eurder.domain.customer.Customer;
 import com.simon.eurder.domain.customer.CustomerAddress;
-import com.simon.eurder.domain.customer.CustomerDBRepository;
 import com.simon.eurder.domain.item.Item;
-import com.simon.eurder.domain.item.ItemRepository;
-import com.simon.eurder.domain.order.OrderRepository;
+import com.simon.eurder.repository.ItemRepository;
+import com.simon.eurder.repository.OrderRepository;
 import com.simon.eurder.service.customer.CustomerService;
 import com.simon.eurder.service.item.ItemService;
 
-public class OrderServiceTestSetUp {
+public class ServiceTestSetup {
 
     public OrderService setUpOrderService(ItemService itemService, CustomerService customerService) {
         return new OrderService(
@@ -21,9 +20,7 @@ public class OrderServiceTestSetUp {
     }
 
     public CustomerService createCustomerServiceWithSimonDesmetInRepository() {
-        CustomerService customerService = new CustomerService(new CustomerDBRepository());
-        customerService.createCustomer(createSimonDesmet());
-        return customerService;
+       return null;
     }
 
     public ItemService createItemServiceWithGolfBallInRepository() {

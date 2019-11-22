@@ -1,7 +1,7 @@
 package com.simon.eurder.service.item;
 
 import com.simon.eurder.domain.item.Item;
-import com.simon.eurder.domain.item.ItemRepository;
+import com.simon.eurder.repository.ItemRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

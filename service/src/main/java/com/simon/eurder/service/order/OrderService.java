@@ -2,15 +2,15 @@ package com.simon.eurder.service.order;
 
 import com.simon.eurder.domain.order.ItemGroup;
 import com.simon.eurder.domain.order.Order;
-import com.simon.eurder.domain.order.OrderRepository;
+import com.simon.eurder.repository.OrderRepository;
 import com.simon.eurder.service.item.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,7 +33,9 @@ public class OrderService {
     }
 
     public Order createOrder(List<ItemGroup> itemGroups, String customerID) {
-        Order order = new Order(itemGroups, customerID);
+        Order order = new Order(itemGroups.stream()
+                .map(itemGroup -> new ItemGroup(itemGroup.getItemID(),itemGroup.getAmount()))
+                .collect(Collectors.toList()), customerID);
         orderValidator.validateOrder(order);
         setItemNames(order);
         setTotalPrice(order);

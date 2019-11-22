@@ -3,6 +3,7 @@ package com.simon.eurder.service.customer;
 import com.simon.eurder.domain.customer.Customer;
 import com.simon.eurder.domain.customer.CustomerAddress;
 import com.simon.eurder.domain.customer.CustomerDBRepository;
+import com.simon.eurder.repository.CustomerCrudRepository;
 import com.simon.eurder.service.ServiceTestApp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -18,7 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class CustomerServiceTest {
 
     @Autowired
-    CustomerDBRepository customerRepository;
+    CustomerCrudRepository customerRepository;
 
     @Autowired
     private CustomerService customerService;
@@ -41,17 +43,14 @@ class CustomerServiceTest {
                 customerAddress);
     }
 
-    @AfterEach
-    void tearDown() {
-        customerRepository.clearCustomers();
-    }
 
+    @Sql(scripts = {"classpath:delete-rows.sql"})
     @Test
     void whenCreatingCustomerThroughService_customerIsInRepository() {
 
         customerService.createCustomer(customer);
         Assertions.assertEquals(1, (int) customerRepository
-                .getCustomers().stream()
+                .findAll().stream()
                 .filter(cus -> cus.getCustomerID()
                         .equals("Test001")).count());
     }

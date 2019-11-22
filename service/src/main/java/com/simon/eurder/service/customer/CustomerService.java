@@ -1,7 +1,7 @@
 package com.simon.eurder.service.customer;
 
 import com.simon.eurder.domain.customer.Customer;
-import com.simon.eurder.domain.customer.CustomerDBRepository;
+import com.simon.eurder.repository.CustomerCrudRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,26 +10,27 @@ import java.util.List;
 @Component
 public class CustomerService {
 
-    private CustomerDBRepository customerRepository;
+    private final CustomerCrudRepository customerRepository;
 
     @Autowired
-    public CustomerService(CustomerDBRepository customerRepository) {
+    public CustomerService(CustomerCrudRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
     public void createCustomer(Customer customer) {
-        customerRepository.createCustomer(customer);
+        customerRepository.save(customer);
     }
 
     public List<Customer> getAllCustomers() {
-        return customerRepository.getCustomers();
+        return customerRepository.findAll();
     }
 
     public Customer getCustomerByID(String customerID) {
-            return customerRepository.getCustomerByID(customerID);
+            return customerRepository.findByCustomerID(customerID).orElseThrow(
+                    ()->new IllegalArgumentException("Customer not found!"));
     }
 
     public void clearCustomers() {
-        customerRepository.clearCustomers();
+        customerRepository.deleteAll();
     }
 }

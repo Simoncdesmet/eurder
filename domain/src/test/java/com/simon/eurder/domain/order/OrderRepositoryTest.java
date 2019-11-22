@@ -2,12 +2,10 @@ package com.simon.eurder.domain.order;
 
 import com.simon.eurder.domain.customer.Customer;
 import com.simon.eurder.domain.customer.CustomerAddress;
-import com.simon.eurder.domain.item.Item;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.simon.eurder.repository.OrderRepository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +41,6 @@ class OrderRepositoryTest {
         Order order = new Order(
                 List.of(new ItemGroup("Golf ball", 50)),
                 customer.getCustomerID());
-
 
         orderRepository.createOrder(order);
         assertTrue(orderRepository.getAllOrders().contains(order));

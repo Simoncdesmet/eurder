@@ -1,6 +1,5 @@
 package com.simon.eurder.api.shipment;
 
-import com.simon.eurder.service.order.OrderServiceTestSetUp;
 import com.simon.eurder.service.shipment.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

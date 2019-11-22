@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
@@ -32,12 +33,12 @@ class OrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        OrderServiceTestSetUp setUp = new OrderServiceTestSetUp();
+        ServiceTestSetup setUp = new ServiceTestSetup();
         itemService = setUp.createItemServiceWithGolfBallInRepository();
-        customerService = setUp.createCustomerServiceWithSimonDesmetInRepository();
         orderService = setUp.setUpOrderService(itemService, customerService);
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenCreatingOrderThroughService_orderForCustomerIDIsInRepository() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
@@ -48,6 +49,7 @@ class OrderServiceTest {
     }
 
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenCreatingOrderOf50GolfBalls_totalPriceOfOrderIs50() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
@@ -55,6 +57,7 @@ class OrderServiceTest {
         assertEquals(50, loggedOrder.getTotalPrice());
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenCreatingOrderWithItemThatDoesntExist_exceptionIsThrown() {
         Order wrongOrder = prepareSingleLineOrder("Non-existing Golf ball", 50);
@@ -63,6 +66,7 @@ class OrderServiceTest {
                 .hasMessage("No item found with this id.");
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenCreatingOrderWithEnoughStockAvailable_ShippingDateIsNextDay() {
         Order order = prepareSingleLineOrder("Golf ball", 50);
@@ -73,6 +77,7 @@ class OrderServiceTest {
 
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenCreatingOrderWithNotEnoughStockAvailable_ShippingDateIsNextWeek() {
         Order newOrder = prepareSingleLineOrder("Golf ball", 60);
@@ -83,6 +88,7 @@ class OrderServiceTest {
                 .getShippingDate(), LocalDate.now().plus(7, ChronoUnit.DAYS));
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenCreatingOrderWithNonExistingCustomer_thenExceptionIsThrown() {
         Order orderWithNotExistingCustomer = new Order(
@@ -95,6 +101,7 @@ class OrderServiceTest {
                 .hasMessage("No customer found with this id.");
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenPlacingOrder_itemNameIsAddedToItemGroups() {
         Order order = prepareSingleLineOrder("Golf ball", 10);
@@ -103,6 +110,7 @@ class OrderServiceTest {
                 .getItemGroups().get(0).getItemName(), "Golf ball");
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenGettingOrderReportForCustomer_printOutIsReturned() {
         Order loggedOrder = createLoggedOrder();
@@ -112,6 +120,7 @@ class OrderServiceTest {
         assertTrue(orderSummary.contains("Order with id: " + loggedOrder.getOrderID()));
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenReordering_orderIsRecreated() {
         Order loggedOrder = createLoggedOrder();
@@ -121,6 +130,7 @@ class OrderServiceTest {
         assertNotEquals(reorderedOrder.getOrderID(), loggedOrder.getOrderID());
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void whenReorderingOrderWhereThirdItemGroupWillBeOutOfStock_OnlyThirdItemGroupHasShippingDateOfNextWeek() {
         Order loggedOrder = createLoggedOrder();
@@ -131,6 +141,7 @@ class OrderServiceTest {
         assertEquals(reorderedOrder.getItemGroups().get(2).getShippingDate(), LocalDate.now().plus(7, ChronoUnit.DAYS));
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void givenUpdatedItem_whenReorderingOrder_orderUsesNewItemInformation() {
         Order newOrder = prepareOrderOfThirtyGolfBallsInThreeLines();
@@ -146,6 +157,7 @@ class OrderServiceTest {
                 .collect(Collectors.toList()).contains("Updated golf ball"));
     }
 
+    @Sql(scripts = {"classpath:delete-rows.sql", "classpath:create-customer.sql"})
     @Test
     void givenUpdatedItem_whenReorderingOrder_oldOrderStaysTheSame() {
         Order loggedOrder = createLoggedOrder();

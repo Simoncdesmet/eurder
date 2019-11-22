@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.PropertySource;
 
 @PropertySource("classpath:domaintestapp.properties")
-@SpringBootApplication(scanBasePackages = "com.simon.eurder.domain", exclude={SecurityAutoConfiguration.class})
+@SpringBootApplication(scanBasePackages = "com.simon.eurder", exclude={SecurityAutoConfiguration.class})
 public class DomainTestApp {
 
     public static void main(String[] args) {
